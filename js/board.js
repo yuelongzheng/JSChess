@@ -10,7 +10,7 @@ GameBoard.side = COLOURS.WHITE;
 // Draw can be claimed if no captures or no pawn has been moved in fifty moves
 GameBoard.fiftyMove = 0;
 // A ply is one turn take by a player, keep a count of every ply
-GameBoard.hisPlay = 0;
+GameBoard.hisPly = 0;
 // Number of plys made in the search tree 
 GameBoard.ply = 0;
 /*
@@ -35,6 +35,49 @@ GameBoard.pieceList = new Array(14 * 10);
 // position key represents the pieces on the board
 GameBoard.posKey = 0;
 
+// For AI
+GameBoard.moveList = new Array(MAXDEPTH * MAXPOSITIONMOVES);
+GameBoard.moveScores = new Array(MAXDEPTH * MAXPOSITIONMOVES);
+GameBoard.moveListStart = new Array(MAXDEPTH); 
+
+function PrintBoard(){
+    console.log("\nGame Board: \n");
+    for(let rank = RANKS.RANK_8 ; rank >= RANKS.RANK_1 ; rank--){
+        let line = (RankChar[rank] + " ");
+        for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
+            let square = FileRankToSquare(file,rank);
+            let piece = GameBoard.pieces[square];
+            line += (" " + PieceChar[piece] + " ");
+        }
+        console.log(line);
+    }
+    let line = "  ";
+    for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
+        line += (' ' + FileChar[file] + ' ');
+    }
+
+    console.log(line);
+    console.log("side: " + SideChar[GameBoard.side]);
+    console.log("enPassant: " + GameBoard.enPassant);
+    line = "";
+
+    if(GameBoard.castlePermission & CASTLE_BIT.WHITE_KING_SIDE_CASTLE){
+        line += 'K';
+    }
+    if(GameBoard.castlePermission & CASTLE_BIT.WHITE_QUEEN_SIDE_CASTLE){
+        line += 'Q';
+    }
+    if(GameBoard.castlePermission & CASTLE_BIT.BLACK_KING_SIDECASTLE){
+        line += 'k';
+    }
+    if(GameBoard.castlePermission & CASTLE_BIT.BLACK_QUEEN_SIDE_CASTLE){
+        line += 'q';
+    }
+
+    console.log("Castle Permission: " + line);
+    console.log("key: " + GameBoard.posKey.toString(16));
+}
+
 function GeneratePosKey(){
     let finalKey = 0;
     for(let square = 0 ; square < BOARD_SQUARE_NUM ; square++){
@@ -53,3 +96,83 @@ function GeneratePosKey(){
     return finalKey;
 }
 
+function ResetBoard(){
+    // Wipe board
+    GameBoard.pieces.fill(SQUARES.OFFBOARD, 0, BOARD_SQUARE_NUM)
+    // Make the 64 active squares empty
+    GameBoard.pieces.fill(PIECES.EMPTY, square120(0), square120(64));
+    GameBoard.pieceList.fill(PIECES.EMPTY, 0, GameBoard.pieceList.length);
+    GameBoard.material.fill(0, 0, GameBoard.material.length);
+    GameBoard.pieceNumber.fill(0, 0, GameBoard.pieceNumber.length);
+
+    GameBoard.side = COLOURS.BOTH;
+    GameBoard.enPassant = SQUARES.NO_SQUARE;
+    GameBoard.fiftyMove = 0;
+    GameBoard.ply = 0;
+    GameBoard.hisPly = 0;
+    GameBoard.castlePermission = 0;
+    GameBoard.posKey = 0;
+    GameBoard.moveListStart[GameBoard.ply] = 0;
+}
+
+/*
+    Parses FEN Strings
+    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+    is the FEN string for the starting position
+
+    FEN Strings contain 6 fields, each separated by spaces
+        1. Piece Placement Data. 
+            Black is lower case and white
+        is upper case
+        2. Active colour, whose turn it is
+        3. Castling permissions
+        4. En Passant Target Square
+        5. 50 move rule counter
+        6. Full move counter, number of full moves. 
+            It increments after black moves.
+*/
+function ParseFen(fen){
+    ResetBoard();
+    let gridPointer, row = 1;
+    let parts = fen.split(' ');
+    let pieceData = parts[0];
+    let activeColour = parts[1];
+    let castlePerm = parts[2];
+    let enPass = parts[3];
+    pieceData.split('/').forEach(function(element) {
+        // starts grid pointer at 21,31,..., 91
+        gridPointer= 1+(++row)*10; 
+        element.split('').forEach(function(letter) {
+            let mnemonic= '-PNBRQKpnbrqk--12345678'.indexOf(letter);
+            if(mnemonic == -1){
+                console.log("FEN Error, Piece Data Error");
+                return;
+            }
+            if (mnemonic < 14){
+                // Puts piece at index. Refer to PIECES object in defs.js,
+                GameBoard.pieces[gridPointer++] = mnemonic;
+            }
+            else{
+                // if a number n is encountered then increment gridPointer by n
+                gridPointer += mnemonic - 14; 
+            }
+        });
+    });
+    
+    GameBoard.side = (activeColour == 'w') ? COLOURS.WHITE : COLOURS.BLACK;
+    castlePerm.split('').forEach(function(letter) {
+        let bit = "-KQkq".indexOf(letter);
+        if(bit === -1){
+            console.log(bit + " " + letter + " " + "FEN Error, Castle Permissions Error");
+            return;
+        }
+        GameBoard.castlePermission |= bit;
+    });
+    if(enPass.length != 1){
+        let file = enPass.charAt(0).charCodeAt() - 'a'.charCodeAt();
+        let rank = enPass.charAt(1).charCodeAt() - '1'.charCodeAt();
+        console.log("File: " + file + " Rank: " + rank);
+        GameBoard.enPassant = FileRankToSquare(file,rank);
+    }
+    GameBoard.posKey = GeneratePosKey();
+}

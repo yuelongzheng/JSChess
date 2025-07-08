@@ -11,7 +11,7 @@ let RANKS = {RANK_1 : 0, RANK_2 : 1, RANK_3 : 2, RANK_4 : 3,
 
 let COLOURS = { WHITE : 0, BLACK : 1, BOTH : 2};
 
-let CASTLEBIT = { WHITE_KING_SIDE_CASTLE : 1, WHITE_QUEEN_SIDE_CASTLE : 2, 
+let CASTLE_BIT = { WHITE_KING_SIDE_CASTLE : 1, WHITE_QUEEN_SIDE_CASTLE : 2, 
     BLACK_KING_SIDECASTLE : 3, BLACK_QUEEN_SIDE_CASTLE : 4}
 
 let SQUARES = {
@@ -22,8 +22,23 @@ let SQUARES = {
 
 let BOOL = {FALSE : 0, TRUE : 1};
 
+// Maximum number of moves in a game
+// this is well the max number of moves in a recorded game of chess
+let MAXGAMEMOVES = 2048;
+// Maximum number of moves that can be generated in a given position
+let MAXPOSITIONMOVES = 256;
+// Search depth for AI
+let MAXDEPTH = 64; 
+
 let FilesBoard = new Array(BOARD_SQUARE_NUM);
 let RanksBoard = new Array(BOARD_SQUARE_NUM);
+
+let START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+let PieceChar = ".PNBRQKpnbrqk"
+let SideChar = "wb-";
+let RankChar = "12345678";
+let FileChar = "abcdefgh";
 
 function FileRankToSquare(file ,rank) { 
     return ((21 + file) + (10 * rank));
@@ -74,7 +89,7 @@ function RAND_31(){
         64 : Not a board square
 */
 function square64(square120){
-    return Square120ToSquare64[(sq120)];
+    return Square120ToSquare64[(square120)];
 }
 
 /*
@@ -83,6 +98,6 @@ function square64(square120){
         0 - 119 : Actual board squares
         120 : Not a board square
 */
-function square120(sqaure64){
+function square120(square64){
     return Square64ToSquare120[(square64)];
 }

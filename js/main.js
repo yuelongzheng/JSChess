@@ -1,6 +1,8 @@
 $(function(){
     init();
     console.log("Main Init Called");
+    ParseFen(START_FEN);
+    PrintBoard();
 });
 
 function InitFilesRanksBoard(){
@@ -46,7 +48,7 @@ function InitSquare120ToSquare64(){
     }
 
     for(let rank = RANKS.RANK_1 ; rank <= RANKS.RANK_8 ; rank++){
-        for(let file = FILES.FILE_A ; files <= FILE_H ; file++){
+        for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
             let square = FileRankToSquare(file, rank);
             Square64ToSquare120[square64] = square;
             Square120ToSquare64[square] = square64;
@@ -60,4 +62,5 @@ function init(){
     console.log("init() called");
     InitFilesRanksBoard();
     InitHashKeys();
+    InitSquare120ToSquare64();
 }
