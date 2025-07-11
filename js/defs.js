@@ -41,7 +41,9 @@ let RankChar = "12345678";
 let FileChar = "abcdefgh";
 
 function FileRankToSquare(file ,rank) { 
-    return ((21 + file) + (10 * rank));
+    let starting_square = 21;
+    let row_length = 10; // In the 120 array the row length is 10
+    return ((starting_square + file) + (row_length * rank));
 }
 
 // Determines whether a piece is a big/major/minor piece

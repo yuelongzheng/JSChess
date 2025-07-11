@@ -6,10 +6,8 @@ $(function(){
 });
 
 function InitFilesRanksBoard(){
-    for(let index = 0 ; index < BOARD_SQUARE_NUM ; index++){
-        FilesBoard[index] = SQUARES.OFFBOARD;
-        RanksBoard[index] = SQUARES.OFFBOARD;
-    }
+    FilesBoard.fill(SQUARES.OFFBOARD, 0, FilesBoard.length);
+    RanksBoard.fill(SQUARES.OFFBOARD, 0, RanksBoard.length);
 
     for(let rank = RANKS.RANK_1 ; rank <= RANKS.RANK_8 ; rank++){
         for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
@@ -18,19 +16,16 @@ function InitFilesRanksBoard(){
             RanksBoard[square] = rank;
         }
     }
-
-
-    console.log("FilesBoard[0]: " + FilesBoard[0] + "," +  " RanksBoard[0]: " + RanksBoard[0]);
-    console.log("FilesBoard[SQUARES.A1]: " + FilesBoard[SQUARES.A1] + "," + " RanksBoard[SQUARES.A1]: " + RanksBoard[SQUARES.A1]);
-    console.log("FilesBoard[SQUARES.E8]: " + FilesBoard[SQUARES.E8] + "," + " RanksBoard[SQUARES.E8]: " + RanksBoard[SQUARES.E8]);
 }
 
 function InitHashKeys(){
-    for(let index = 0 ; index < 14 * 120 ; index++){
+    // PieceKeys.fill(RAND_31(), 0, PieceKeys.length)
+    // This is unacceptable becuase RAND_31 is called once only, instead of multiple times
+    for(let index = 0 ; index < PieceKeys.length ; index++){
         PieceKeys[index] = RAND_31();
     }
     SideKey = RAND_31();
-    for(let index = 0 ; index < 16 ; index++){
+    for(let index = 0 ; index < CastleKeys.length ; index++){
         CastleKeys[index] = RAND_31();
     }
 }
@@ -39,23 +34,18 @@ function InitHashKeys(){
 function InitSquare120ToSquare64(){
     let square64 = 0;
     let outOfIndex64 = 64;
-
-    for(let index = 0 ; index < BOARD_SQUARE_NUM ; index++){
-        Square120ToSquare64[index] = outOfIndex64;
-    }
-    for(let index = 0 ; index < outOfIndex64 ; index++){
-        Square64ToSquare120[index] = BOARD_SQUARE_NUM;
-    }
-
+    Square120ToSquare64.fill(outOfIndex64, 0, Square120ToSquare64.length);
+    Square64ToSquare120.fill(BOARD_SQUARE_NUM, 0, Square64ToSquare120.length);
     for(let rank = RANKS.RANK_1 ; rank <= RANKS.RANK_8 ; rank++){
         for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
             let square = FileRankToSquare(file, rank);
             Square64ToSquare120[square64] = square;
-            Square120ToSquare64[square] = square64;
-            square64++; 
+            Square120ToSquare64[square] = square64++;
         }
     }
-
+    console.log(Square120ToSquare64);
+    console.log(Square64ToSquare120);
+    console.log(FileRankToSquare(1,8));
 
 }
 function init(){

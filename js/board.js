@@ -123,7 +123,7 @@ function ResetBoard(){
     FEN Strings contain 6 fields, each separated by spaces
         1. Piece Placement Data. 
             Black is lower case and white
-        is upper case
+        is upper case. The string goes rank 8 to rank 1, File a to file h
         2. Active colour, whose turn it is
         3. Castling permissions
         4. En Passant Target Square
@@ -133,15 +133,15 @@ function ResetBoard(){
 */
 function ParseFen(fen){
     ResetBoard();
-    let gridPointer, row = 1;
+    let gridPointer, row = 9;
     let parts = fen.split(' ');
     let pieceData = parts[0];
     let activeColour = parts[1];
     let castlePerm = parts[2];
     let enPass = parts[3];
     pieceData.split('/').forEach(function(element) {
-        // starts grid pointer at 21,31,..., 91
-        gridPointer= 1+(++row)*10; 
+        // starts grid pointer at 91,81,..., 21
+        gridPointer= 1+(row--)*10; 
         element.split('').forEach(function(letter) {
             let mnemonic= '-PNBRQKpnbrqk--12345678'.indexOf(letter);
             if(mnemonic == -1){
