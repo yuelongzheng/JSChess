@@ -43,9 +43,6 @@ function InitSquare120ToSquare64(){
             Square120ToSquare64[square] = square64++;
         }
     }
-    console.log(Square120ToSquare64);
-    console.log(Square64ToSquare120);
-    console.log(FileRankToSquare(1,8));
 
 }
 function init(){

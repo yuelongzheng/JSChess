@@ -24,10 +24,13 @@ GameBoard.enPassant = 0;
 GameBoard.castlePermission = 0;
 // Holds the value of material of each side in a given position
 GameBoard.material = new Array(2); 
-// indexed by PIECES in defs.js
+/* 
+    indexed by PIECES in defs.js
+    Keeps track of the number of each piece on the board
+*/
 GameBoard.pieceNumber = new Array(13); 
 /*
-    Gets the squares every piece is located in
+    Gets the squares every piece is located on
     There can be a maximum of 10 pieces (pawns promoting to knights/rooks/bishops)
     14 (instead of 13) is used to guarantee space for all pieces
 */
@@ -96,15 +99,37 @@ function GeneratePosKey(){
     return finalKey;
 }
 
-function ResetBoard(){
-    // Wipe board
-    GameBoard.pieces.fill(SQUARES.OFFBOARD, 0, BOARD_SQUARE_NUM)
-    // Make the 64 active squares empty
-    GameBoard.pieces.fill(PIECES.EMPTY, square120(0), square120(64));
+function UpdateListsMaterial(){
+    // Wipe arrays that need to be updated
     GameBoard.pieceList.fill(PIECES.EMPTY, 0, GameBoard.pieceList.length);
     GameBoard.material.fill(0, 0, GameBoard.material.length);
     GameBoard.pieceNumber.fill(0, 0, GameBoard.pieceNumber.length);
 
+    for(let index = 0 ; index < ACTIVE_SQUARE_NUM ; index++){
+        let square = square120(index);
+        let piece = GameBoard.pieces[square];
+        if(piece != PIECES.EMPTY){
+            console.log('piece ' + piece + ' on ' + square);
+            let colour = PieceCol[piece];
+            GameBoard.material[colour] += PieceVal[piece];
+            GameBoard.pieceList[pieceIndex(piece, GameBoard.pieceNumber[piece])] = square;
+            GameBoard.pieceNumber[piece]++;
+        }
+    }
+}
+
+function ResetBoard(){
+    // Wipe board
+    GameBoard.pieces.fill(SQUARES.OFFBOARD, 0, BOARD_SQUARE_NUM)
+    /*  
+        This overrides offboard squares with an empty piece
+        GameBoard.pieces.fill(PIECES.EMPTY, square120(0), square120(64));
+        Below only goes through the active squares
+    */
+    // Make the 64 active squares empty
+    for(let index = 0 ; index < ACTIVE_SQUARE_NUM ; index++){
+        GameBoard.pieces[square120(index)] = PIECES.EMPTY;
+    }
     GameBoard.side = COLOURS.BOTH;
     GameBoard.enPassant = SQUARES.NO_SQUARE;
     GameBoard.fiftyMove = 0;
@@ -175,4 +200,5 @@ function ParseFen(fen){
         GameBoard.enPassant = FileRankToSquare(file,rank);
     }
     GameBoard.posKey = GeneratePosKey();
+    UpdateListsMaterial();
 }
