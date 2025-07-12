@@ -209,4 +209,94 @@ function ParseFen(fen){
     }
     GameBoard.posKey = GeneratePosKey();
     UpdateListsMaterial();
+    PrintSquareAttacked();
+}
+
+/*
+    Checks if a square is attacked by a side/colour
+*/
+function SquareAttacked(square, side){
+    // Check if square is attacked by pawns
+    if(side === COLOURS.WHITE){
+        if(GameBoard.pieces[square - 11] === PIECES.wP || GameBoard.pieces[square - 9] === PIECES.wP){
+            return BOOL.TRUE;
+        }
+    }
+    else{
+        if(GameBoard.pieces[square + 11] === PIECES.bP || GameBoard.pieces[square + 9] === PIECES.bP){
+            return BOOL.TRUE;
+        }
+    }
+    
+    // Check if square is attacked by knights
+    for(let i = 0 ; i < KnightDirections.length ; i++){
+        let piece = GameBoard.pieces[square + KnightDirections[i]];
+        if(piece !== SQUARES.OFFBOARD && PieceCol[piece] === side && PieceKnight[piece] === BOOL.TRUE){
+            return BOOL.TRUE;
+        }
+    }
+
+    // Check if square is attacked horizontally/vertically by a sliding piece
+    for(let i = 0 ; i < RookDirections.length ; i++){
+        let direction = RookDirections[i];
+        let currentSquare = square + direction;
+        let piece = GameBoard.pieces[currentSquare];
+        while(piece !== SQUARES.OFFBOARD){
+            if(piece !== PIECES.EMPTY){
+                if(PieceRookQueen[piece] === BOOL.TRUE && PieceCol[piece] == side){
+                    return BOOL.TRUE;
+                }
+                break;
+            }
+            currentSquare += direction;
+            piece = GameBoard.pieces[currentSquare];
+        }
+    }
+
+    // Check if square is attacked diagonally by a sliding piece
+    for(let i = 0 ; i < BishopDirections.length ; i++){
+        let direction = BishopDirections[i];
+        let currentSquare = square + direction;
+        let piece = GameBoard.pieces[currentSquare];
+        while(piece !== SQUARES.OFFBOARD){
+            if(piece !== PIECES.EMPTY){
+                if(PieceBishopQueen[piece] === BOOL.TRUE && PieceCol[piece] == side){
+                    return BOOL.TRUE;
+                }
+                break;
+            }
+            currentSquare += direction;
+            piece = GameBoard.pieces[currentSquare];
+        }
+    }
+
+    // Check if square is attacked by a king
+    for(let i = 0 ; i < KingDirections.length ; i++){
+        let piece = GameBoard.pieces[square + KingDirections[i]];
+        if(piece !== SQUARES.OFFBOARD && PieceCol[piece] === side && PieceKing[piece] === BOOL.TRUE){
+            return BOOL.TRUE;
+        }
+    }
+
+    return BOOL.FALSE;
+}
+
+function PrintSquareAttacked(){
+    let piece;
+    console.log("\nAttacked:\n");
+    for(let rank = RANKS.RANK_8 ; rank >= RANKS.RANK_1 ; rank--){
+        let line = ((rank + 1) + " ");
+        for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
+            let square = FileRankToSquare(file, rank);
+            if(SquareAttacked(square, GameBoard.side) === BOOL.TRUE){
+                piece = "X";
+            }
+            else{
+                piece = "-";
+            }
+            line += (" " + piece + " ");
+        }
+        console.log(line);
+    }
+    console.log("\n");
 }
