@@ -25,13 +25,15 @@ let BOOL = {FALSE : 0, TRUE : 1};
 
 // Maximum number of moves in a game
 // this is well the max number of moves in a recorded game of chess
-let MAXGAMEMOVES = 2048;
+let MAX_GAME_MOVES = 2048;
 // Maximum number of moves that can be generated in a given position
-let MAXPOSITIONMOVES = 256;
+let MAX_POSITION_MOVES = 256;
 // Search depth for AI
-let MAXDEPTH = 64; 
+let MAX_DEPTH = 64; 
 
+// For a given index return the file
 let FilesBoard = new Array(BOARD_SQUARE_NUM);
+// For a given index return the rank
 let RanksBoard = new Array(BOARD_SQUARE_NUM);
 
 let START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -41,6 +43,10 @@ let SideChar = "wb-";
 let RankChar = "12345678";
 let FileChar = "abcdefgh";
 
+/*
+    Given a file and rank
+    return the corresponding index in the board array (length 120)
+*/
 function FileRankToSquare(file ,rank) { 
     let starting_square = 21;
     let row_length = 10; // In the 120 array the row length is 10

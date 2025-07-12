@@ -39,9 +39,9 @@ GameBoard.pieceList = new Array(14 * 10);
 GameBoard.posKey = 0;
 
 // For AI
-GameBoard.moveList = new Array(MAXDEPTH * MAXPOSITIONMOVES);
-GameBoard.moveScores = new Array(MAXDEPTH * MAXPOSITIONMOVES);
-GameBoard.moveListStart = new Array(MAXDEPTH); 
+GameBoard.moveList = new Array(MAX_DEPTH * MAX_POSITION_MOVES);
+GameBoard.moveScores = new Array(MAX_DEPTH * MAX_POSITION_MOVES);
+GameBoard.moveListStart = new Array(MAX_DEPTH); 
 
 function PrintBoard(){
     console.log("\nGame Board: \n");
@@ -99,6 +99,14 @@ function GeneratePosKey(){
     return finalKey;
 }
 
+function PrintPieceList() {
+    for(let piece = PIECES.wP ; piece <= PIECES.bK ; piece++){
+        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
+            console.log('Piece ' + PieceChar[piece] + ' on ' + PrintSquare(GameBoard.pieceList[PieceIndex(piece, pieceNum)]));
+        }
+    }
+}
+
 function UpdateListsMaterial(){
     // Wipe arrays that need to be updated
     GameBoard.pieceList.fill(PIECES.EMPTY, 0, GameBoard.pieceList.length);
@@ -108,14 +116,14 @@ function UpdateListsMaterial(){
     for(let index = 0 ; index < ACTIVE_SQUARE_NUM ; index++){
         let square = square120(index);
         let piece = GameBoard.pieces[square];
-        if(piece != PIECES.EMPTY){
-            console.log('piece ' + piece + ' on ' + square);
+        if(piece !== PIECES.EMPTY){
             let colour = PieceCol[piece];
             GameBoard.material[colour] += PieceVal[piece];
             GameBoard.pieceList[pieceIndex(piece, GameBoard.pieceNumber[piece])] = square;
             GameBoard.pieceNumber[piece]++;
         }
     }
+    PrintPieceList();
 }
 
 function ResetBoard(){
@@ -158,30 +166,30 @@ function ResetBoard(){
 */
 function ParseFen(fen){
     ResetBoard();
-    let gridPointer, row = 9;
+    let rank = RANKS.RANK_8;
     let parts = fen.split(' ');
     let pieceData = parts[0];
     let activeColour = parts[1];
     let castlePerm = parts[2];
     let enPass = parts[3];
     pieceData.split('/').forEach(function(element) {
-        // starts grid pointer at 91,81,..., 21
-        gridPointer= 1+(row--)*10; 
+        let file = FILES.FILE_A;
         element.split('').forEach(function(letter) {
             let mnemonic= '-PNBRQKpnbrqk--12345678'.indexOf(letter);
-            if(mnemonic == -1){
+            if(mnemonic === -1){
                 console.log("FEN Error, Piece Data Error");
                 return;
             }
             if (mnemonic < 14){
                 // Puts piece at index. Refer to PIECES object in defs.js,
-                GameBoard.pieces[gridPointer++] = mnemonic;
+                GameBoard.pieces[FileRankToSquare(file++, rank)] = mnemonic;
             }
             else{
-                // if a number n is encountered then increment gridPointer by n
-                gridPointer += mnemonic - 14; 
+                // if a number n is encountered then increment file by n
+                file += mnemonic - 14;
             }
         });
+        rank--;
     });
     
     GameBoard.side = (activeColour == 'w') ? COLOURS.WHITE : COLOURS.BLACK;
@@ -193,7 +201,7 @@ function ParseFen(fen){
         }
         GameBoard.castlePermission |= bit;
     });
-    if(enPass.length != 1){
+    if(enPass.length !== 1){
         let file = enPass.charAt(0).charCodeAt() - 'a'.charCodeAt();
         let rank = enPass.charAt(1).charCodeAt() - '1'.charCodeAt();
         console.log("File: " + file + " Rank: " + rank);
