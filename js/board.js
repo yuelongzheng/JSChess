@@ -1,8 +1,3 @@
-// Generates index of a piece
-function PieceIndex(piece, pieceNumber) { 
-    return (piece * 10 + pieceNumber);
-}
-
 let GameBoard = {};
 
 GameBoard.pieces = new Array(BOARD_SQUARE_NUM);
@@ -102,7 +97,7 @@ function GeneratePosKey(){
 function PrintPieceList() {
     for(let piece = PIECES.wP ; piece <= PIECES.bK ; piece++){
         for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
-            console.log('Piece ' + PieceChar[piece] + ' on ' + PrintSquare(GameBoard.pieceList[PieceIndex(piece, pieceNum)]));
+            console.log('Piece ' + PieceChar[piece] + ' on ' + PrintSquare(GameBoard.pieceList[pieceIndex(piece, pieceNum)]));
         }
     }
 }

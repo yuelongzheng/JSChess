@@ -23,12 +23,8 @@ let SQUARES = {
 
 let BOOL = {FALSE : 0, TRUE : 1};
 
-// Maximum number of moves in a game
-// this is well the max number of moves in a recorded game of chess
 let MAX_GAME_MOVES = 2048;
-// Maximum number of moves that can be generated in a given position
 let MAX_POSITION_MOVES = 256;
-// Search depth for AI
 let MAX_DEPTH = 64; 
 
 // For a given index return the file
@@ -74,6 +70,12 @@ let KnightDirections = [ -8, -19, -21, -12, 8, 19, 21, 12];
 let RookDirections = [-1, -10, 1, 10];
 let BishopDirections = [-9, -11, 11, 9];
 let KingDirections = [-1, -10, 1, 10, -9, -11, 11, 9];
+
+let PieceToDirectionsLength = [0, 0, 8, 4, 4, 8, 8, 0, 8, 4, 4, 8, 8];
+let PieceToDirections = [0, 0, KnightDirections, BishopDirections, RookDirections, KingDirections, KingDirections,
+                            0, KnightDirections, BishopDirections, RookDirections, KingDirections, KingDirections];
+let NonSlidingPieces = [PIECES.wN, PIECES.wK, 0, PIECES.bN, PIECES.bK, 0];
+let NonSlidingStartingIndex = [0, 3];
 /*
     120 squares and 14(13 really, more space???) possible pieces
     Allow for a unique index for each piece and each square
@@ -122,3 +124,62 @@ function square120(square64){
 function pieceIndex(piece, pieceNumber){
     return (piece * 10 + pieceNumber);
 }
+
+/*
+    Move information can be packed into 25 bits
+    0 0000 0000 0000 0000 0000 0000
+
+    Since the active square indices range from 21 to 98 7 bits are required, 
+    which in hexadecimal comes out as 0x7F.
+
+    The from square are stored by the 7 most right bits
+    0 0000 0000 0000 0000 0111 1111
+    The to square are stored by are stored in the 7 next bits
+    0 0000 0000 0011 1111 1000 0000
+
+    There are 12 total pieces that can be captured, this can be stored in the next 4 bits
+    0 0000 0011 1100 0000 0000 0000 (14 zeroes behind the ones)
+
+    The next bit stores whether a move is an en passant move
+    0 0000 0100 0000 0000 0000 0000 - in hex this is 0x40000
+
+    The next bit stores whether a move is a pawn starting move
+    0 0000 1000 0000 0000 0000 0000 - in hex this is 0x80000
+
+    The next bit stores pawn promotion details, requires 4 bits
+    0 1111 0000 0000 0000 0000 0000 - in hex this is 0xF00000 (20 zeroes behind the ones)
+
+    The next bit stores whether or not the move was a castling move
+    1 0000 0000 0000 0000 0000 0000 - in hex this is 0x1000000
+ 
+*/
+function getFromSquare(move){
+    return (move & 0x7F);
+}
+function getToSquare(move){
+    return ((move >> 7) & 0x7F);
+}
+function getCapturedPiece(move){
+    return ((move >> 14) & 0xF);
+}
+function getPromotion(move){
+    return ((move >> 20) & 0xF);
+}
+
+let MOVE_FLAG_EN_PASSANT = 0x40000;
+let MOVE_FLAG_PAWN_START = 0x80000;
+let MOVE_FLAG_CASTLE = 0x1000000;
+
+let MOVE_FLAG_CAPTURE = 0x7C000; // includes the en passant bit and move capture bits
+let MOVE_FLAG_PROMOTION = 0xF00000;
+
+let NO_MOVE = 0;
+
+function IsSquareOffBoard(square){
+    if(GameBoard.pieces[square] == SQUARES.OFFBOARD){
+        return BOOL.TRUE;
+    }
+    return BOOL.FALSE;
+}
+
+let ONE_RANK_MOVE = 10;
