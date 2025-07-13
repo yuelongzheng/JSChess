@@ -186,3 +186,19 @@ function IsSquareOffBoard(square){
 }
 
 let ONE_RANK_MOVE = 10;
+
+function HashPiece(piece, square){
+    GameBoard.posKey ^= PieceKeys[(piece * 120) + square];
+}
+
+function HashCastle(){
+    GameBoard.posKey ^= CastleKeys[GameBoard.castlePermission];
+}
+
+function HashSide(){
+    GameBoard.posKey ^= SideKey;
+}
+
+function HashEnPassant(){
+    GameBoard.posKey ^= PieceKeys[GameBoard.enPassant];
+}

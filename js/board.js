@@ -38,6 +38,61 @@ GameBoard.moveList = new Array(MAX_DEPTH * MAX_POSITION_MOVES);
 GameBoard.moveScores = new Array(MAX_DEPTH * MAX_POSITION_MOVES);
 GameBoard.moveListStart = new Array(MAX_DEPTH); 
 
+function CheckBoard(){
+    let temp_pieceNum = new Array(GameBoard.pieceNumber.length);
+    for(let i = 0 ; i < GameBoard.pieceNumber.length ; i++){
+        temp_pieceNum[i] = 0;
+    }
+    let temp_material = new Array(GameBoard.material.length);
+    for(let i = 0 ; i < GameBoard.material.length ; i++){
+        temp_material[i] = 0;
+    }
+
+    let square;
+    let temp_piece;
+    for(temp_piece = PIECES.wP ; temp_piece <= PIECES.bK ; temp_piece++){
+        for(let piece_num = 0 ; piece_num < GameBoard.pieceNumber[temp_piece] ; piece_num++){
+            square = GameBoard.pieceList[pieceIndex(temp_piece, piece_num)];
+            if(GameBoard.pieces[square] != temp_piece){
+                console.error("Error GameBoard.pieces and GameBoard.pieceList do not match");
+                return BOOL.FALSE;
+            }
+        }
+    }
+
+    for(let i = 0 ; i < ACTIVE_SQUARE_NUM ; i++){
+        square = square120(i);
+        temp_piece = GameBoard.pieces[square];
+        temp_pieceNum[temp_piece]++;
+        temp_material[PieceCol[temp_piece]] += PieceVal[temp_piece];
+    }
+
+    for(temp_piece = PIECES.wP; temp_piece <= PIECES.bK ; temp_piece++){
+        if(temp_pieceNum[temp_piece] !== GameBoard.pieceNumber[temp_piece]){
+            console.error("Error GameBoard.pieceNumber");
+            return BOOL.FALSE;
+        }
+    }
+
+    if(temp_material[COLOURS.WHITE] !== GameBoard.material[COLOURS.WHITE] ||
+        temp_material[COLOURS.BLACK] !== GameBoard.material[COLOURS.BLACK]
+    ){
+        console.error("Error GameBoard.material");
+        return BOOL.FALSE;
+    }
+
+    if(GameBoard.side !== COLOURS.WHITE && GameBoard.side !== COLOURS.BLACK){
+        console.error("Error GameBoard.side");
+        return BOOL.FALSE;
+    }
+
+    if(GeneratePosKey() !== GameBoard.posKey){
+        console.log("Error GameBoard.posKey");
+        return BOOL.FALSE;
+    }
+    return BOOL.TRUE;
+}
+
 function PrintBoard(){
     let square, piece, line;
     console.log("\nGame Board: \n");

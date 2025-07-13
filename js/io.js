@@ -17,6 +17,7 @@ function PrintMove(move){
     moveString += FileChar[toFile] + RankChar[toRank];
 
     let promoted = getPromotion(move);
+    console.log('Promoted = ' + promoted);
     if(promoted !== PIECES.EMPTY){
         let promotedChar = 'q';
         if(PieceKnight[promoted] === BOOL.TRUE){
@@ -35,9 +36,10 @@ function PrintMove(move){
 
 function PrintMoveList(){
     let move;
+    let count = 1;
     console.log('Move list: ');
     for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
         move = GameBoard.moveList[i];
-        console.log(PrintMove(move));
+        console.log('Move ' + count++ + ': ' + PrintMove(move));
     }
 }
