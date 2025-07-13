@@ -10,10 +10,10 @@ $(function(){
 function InitFilesRanksBoard(){
     FilesBoard.fill(SQUARES.OFFBOARD, 0, FilesBoard.length);
     RanksBoard.fill(SQUARES.OFFBOARD, 0, RanksBoard.length);
-
+    let square;
     for(let rank = RANKS.RANK_1 ; rank <= RANKS.RANK_8 ; rank++){
         for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
-            let square = FileRankToSquare(file, rank);
+            square = FileRankToSquare(file, rank);
             FilesBoard[square] = file;
             RanksBoard[square] = rank;
         }
@@ -36,11 +36,12 @@ function InitHashKeys(){
 function InitSquare120ToSquare64(){
     let square64 = 0;
     let outOfIndex64 = 64;
+    let square;
     Square120ToSquare64.fill(outOfIndex64, 0, Square120ToSquare64.length);
     Square64ToSquare120.fill(BOARD_SQUARE_NUM, 0, Square64ToSquare120.length);
     for(let rank = RANKS.RANK_1 ; rank <= RANKS.RANK_8 ; rank++){
         for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
-            let square = FileRankToSquare(file, rank);
+            square = FileRankToSquare(file, rank);
             Square64ToSquare120[square64] = square;
             Square120ToSquare64[square] = square64++;
         }

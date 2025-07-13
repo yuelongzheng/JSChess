@@ -35,7 +35,7 @@ function PrintMove(move){
 
 function PrintMoveList(){
     let move;
-    console.log('Movelist: ');
+    console.log('Move list: ');
     for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
         move = GameBoard.moveList[i];
         console.log(PrintMove(move));

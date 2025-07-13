@@ -39,17 +39,18 @@ GameBoard.moveScores = new Array(MAX_DEPTH * MAX_POSITION_MOVES);
 GameBoard.moveListStart = new Array(MAX_DEPTH); 
 
 function PrintBoard(){
+    let square, piece, line;
     console.log("\nGame Board: \n");
     for(let rank = RANKS.RANK_8 ; rank >= RANKS.RANK_1 ; rank--){
-        let line = (RankChar[rank] + " ");
+        line = (RankChar[rank] + " ");
         for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
-            let square = FileRankToSquare(file,rank);
-            let piece = GameBoard.pieces[square];
+            square = FileRankToSquare(file,rank);
+            piece = GameBoard.pieces[square];
             line += (" " + PieceChar[piece] + " ");
         }
         console.log(line);
     }
-    let line = "  ";
+    line = "  ";
     for(let file = FILES.FILE_A ; file <= FILES.FILE_H ; file++){
         line += (' ' + FileChar[file] + ' ');
     }
@@ -78,8 +79,9 @@ function PrintBoard(){
 
 function GeneratePosKey(){
     let finalKey = 0;
+    let piece;
     for(let square = 0 ; square < BOARD_SQUARE_NUM ; square++){
-        let piece = GameBoard.pieces[square]
+        piece = GameBoard.pieces[square]
         if(piece != PIECES.EMPTY && piece != SQUARES.OFFBOARD){
             finalKey ^= PieceKeys[(piece * 120) + square];
         }
@@ -108,11 +110,12 @@ function UpdateListsMaterial(){
     GameBoard.material.fill(0, 0, GameBoard.material.length);
     GameBoard.pieceNumber.fill(0, 0, GameBoard.pieceNumber.length);
 
+    let square, piece, colour;
     for(let index = 0 ; index < ACTIVE_SQUARE_NUM ; index++){
-        let square = square120(index);
-        let piece = GameBoard.pieces[square];
+        square = square120(index);
+        piece = GameBoard.pieces[square];
         if(piece !== PIECES.EMPTY){
-            let colour = PieceCol[piece];
+            colour = PieceCol[piece];
             GameBoard.material[colour] += PieceVal[piece];
             GameBoard.pieceList[pieceIndex(piece, GameBoard.pieceNumber[piece])] = square;
             GameBoard.pieceNumber[piece]++;
@@ -167,10 +170,12 @@ function ParseFen(fen){
     let activeColour = parts[1];
     let castlePerm = parts[2];
     let enPass = parts[3];
+    let file;
+    let mnemonic;
     pieceData.split('/').forEach(function(element) {
-        let file = FILES.FILE_A;
+        file = FILES.FILE_A;
         element.split('').forEach(function(letter) {
-            let mnemonic= '-PNBRQKpnbrqk--12345678'.indexOf(letter);
+            mnemonic= '-PNBRQKpnbrqk--12345678'.indexOf(letter);
             if(mnemonic === -1){
                 console.log("FEN Error, Piece Data Error");
                 return;
@@ -188,8 +193,9 @@ function ParseFen(fen){
     });
     
     GameBoard.side = (activeColour == 'w') ? COLOURS.WHITE : COLOURS.BLACK;
+    let bit;
     castlePerm.split('').forEach(function(letter) {
-        let bit = "-KQkq".indexOf(letter);
+        bit = "-KQkq".indexOf(letter);
         if(bit === -1){
             console.log(bit + " " + letter + " " + "FEN Error, Castle Permissions Error");
             return;
@@ -197,8 +203,8 @@ function ParseFen(fen){
         GameBoard.castlePermission |= bit;
     });
     if(enPass.length !== 1){
-        let file = enPass.charAt(0).charCodeAt() - 'a'.charCodeAt();
-        let rank = enPass.charAt(1).charCodeAt() - '1'.charCodeAt();
+        file = enPass.charAt(0).charCodeAt() - 'a'.charCodeAt();
+        rank = enPass.charAt(1).charCodeAt() - '1'.charCodeAt();
         console.log("File: " + file + " Rank: " + rank);
         GameBoard.enPassant = FileRankToSquare(file,rank);
     }
