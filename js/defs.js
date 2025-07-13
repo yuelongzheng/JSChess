@@ -76,6 +76,9 @@ let PieceToDirections = [0, 0, KnightDirections, BishopDirections, RookDirection
                             0, KnightDirections, BishopDirections, RookDirections, KingDirections, KingDirections];
 let NonSlidingPieces = [PIECES.wN, PIECES.wK, 0, PIECES.bN, PIECES.bK, 0];
 let NonSlidingStartingIndex = [0, 3];
+let SlidingPieces = [PIECES.wB, PIECES.wR, PIECES.wQ, 0, PIECES.bB, PIECES.bR, PIECES.bQ, 0];
+let SlidingPiecesStartingIndex = [0, 4];
+
 /*
     120 squares and 14(13 really, more space???) possible pieces
     Allow for a unique index for each piece and each square
