@@ -128,6 +128,27 @@ function pieceIndex(piece, pieceNumber){
     return (piece * 10 + pieceNumber);
 }
 
+let Kings = [PIECES.wK, PIECES.bK];
+/*
+    Array filled with 15s, except in indices corresponding to
+    A1, E1, H1, A8, E8, H8. (Rook and king locations)
+    Used to alter GameBoard.castlePermission
+*/
+let Castle_Permission_Array = [
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 13, 15, 15, 15, 12, 15, 15, 14, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15,  7, 15, 15, 15,  3, 15, 15, 11, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+];
+
 /*
     Move information can be packed into 25 bits
     0 0000 0000 0000 0000 0000 0000

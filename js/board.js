@@ -6,6 +6,7 @@ GameBoard.side = COLOURS.WHITE;
 GameBoard.fiftyMove = 0;
 // A ply is one turn take by a player, keep a count of every ply
 GameBoard.hisPly = 0;
+GameBoard.history = [];
 // Number of plys made in the search tree 
 GameBoard.ply = 0;
 /*
