@@ -125,10 +125,78 @@ function MakeMove(move){
 
     // Check if king is in check
     if(SquareAttacked(GameBoard.pieceList[pieceIndex(Kings[side], 0)], GameBoard.side)){
-        // TakeMove();
+        UndoMove();
         return BOOL.FALSE;
     }
     return BOOL.TRUE;
 
 
+}
+
+// Reverse Move
+function UndoMove(){
+    GameBoard.hisPly--;
+    GameBoard.ply--;
+
+    let previous = GameBoard.history[GameBoard.hisPly];
+    let move = previous.move;
+    let from = getFromSquare(move);
+    let to = getToSquare(move);
+
+    if(GameBoard.enPassant != SQUARES.NO_SQUARE){
+        HashEnPassant();
+    }
+    HashCastle();
+
+    GameBoard.castlePermission = previous.castlePermission;
+    GameBoard.fiftyMove = previous.fiftyMove;
+    GameBoard.enPassant = previous.enPassant;
+
+    if(GameBoard.enPassant != SQUARES.NO_SQUARE){
+        HashEnPassant();
+    }
+    HashCastle();
+
+    GameBoard.side ^= 1;
+    HashSide();
+
+    if( (MOVE_FLAG_EN_PASSANT & move) !== 0){
+        if(GameBoard.side === COLOURS.WHITE){
+            AddPiece(to - ONE_RANK_MOVE, PIECES.bP);
+        }
+        else{
+            AddPiece(to + ONE_RANK_MOVE, PIECES.wP);
+        }
+    }
+    else if((move & MOVE_FLAG_CASTLE) != 0){
+        switch(to) {
+            case SQUARES.C1:
+                MovePiece(SQUARES.D1, SQUARES.A1);
+                break;
+            case SQUARES.C8:
+                MovePiece(SQUARES.D8, SQUARES.A8);
+                break;
+            case SQUARES.G1:
+                MovePiece(SQUARES.F1, SQUARES.H1);
+                break;
+            case SQUARES.G1:
+                MovePiece(SQUARES.F8, SQUARES.H8);
+                break;
+            default:
+                console.error("Non-valid castling move made");
+                break;
+        }
+    }
+
+    MovePiece(to, from);
+    let captured = getCapturedPiece(move);
+    if(captured != PIECES.EMPTY){
+        AddPiece(to, captured);
+    }
+
+    let promoted_piece = getPromotion(move);
+    if(promoted_piece != PIECES.EMPTY){
+        ClearPiece(from);
+        AddPiece(from, (PieceCol[promoted_piece] === COLOURS.WHITE ? PIECES.wP : PIECES.bP));
+    }
 }

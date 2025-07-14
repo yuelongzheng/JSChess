@@ -6,8 +6,10 @@ $(function(){
     GenerateMoves();
     PrintMoveList();
     CheckBoard();
-    console.log(GameBoard.moveList);
     MakeMove(GameBoard.moveList[1]);
+    PrintBoard();
+    CheckBoard();
+    UndoMove();
     PrintBoard();
     CheckBoard();
 });
