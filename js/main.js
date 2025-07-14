@@ -3,15 +3,6 @@ $(function(){
     console.log("Main Init Called");
     ParseFen(START_FEN);
     PrintBoard();
-    GenerateMoves();
-    PrintMoveList();
-    CheckBoard();
-    MakeMove(GameBoard.moveList[1]);
-    PrintBoard();
-    CheckBoard();
-    UndoMove();
-    PrintBoard();
-    CheckBoard();
 });
 
 function InitFilesRanksBoard(){

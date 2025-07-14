@@ -9,7 +9,7 @@ function ClearPiece(square){
 
     for(let i = 0 ; i < GameBoard.pieceNumber[piece] ; i++){
         if(GameBoard.pieceList[pieceIndex(piece, i)] === square){
-            temp_pieceNum = index;
+            temp_pieceNum = i;
             break;
         }
     }

@@ -2,6 +2,7 @@ $("#SetFen").on("click", function(){
     let fenStr = $("#fenIn").val();
     ParseFen(fenStr)
     PrintBoard();
+    PerftTest(5);
 });
 
 // When enter is pressed in the fen input box
@@ -11,5 +12,6 @@ $("#fenIn").on('keypress', function(e){
         let fenStr = $("#fenIn").val();
         ParseFen(fenStr)
         PrintBoard();
+        PerftTest(5);
     }
 });
