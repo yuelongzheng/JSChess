@@ -1,6 +1,9 @@
 # JSChess
 Learning Javascipt, HTML, and how to create a chess engine
 
+# Live Server
+On [Visual Studio Code](https://code.visualstudio.com/) use [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) to start the chess board
+
 # Testing
 Using [Jest](https://jestjs.io/). To install jest use the following in the JSChess folder
     ```
