@@ -28,6 +28,9 @@ export class Definitions{
         this.MAX_GAME_MOVES = 2048;
         this.MAX_POSITION_MOVES = 256;
         this.MAX_DEPTH = 64; 
+        // Needs to be a lot more than what the evaluation function can return
+        this.INFINITE = 30000;
+        this.MATE = 29000;
 
         // For a given index return the file
         this.FilesBoard = new Array(this.BOARD_SQUARE_NUM);
