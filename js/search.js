@@ -15,15 +15,36 @@ class searchController{
         this.stop;
         this.best;
         this.thinking;
+        this.checkUpLimit = 2047; // Every 2048 nodes checkUp is called
+    }
+
+    checkUp(){
+        if(($.now() - this.start) > this.time){
+            this.stop = this.defs.BOOL.TRUE;
+        }
+    }
+
+    isRepetition(){
+        for(let index = this.board.hisPly - this.board.fiftyMove ; index < this.board.hisPly - 1 ; index++){
+            if(this.board.posKey == this.board.history[index].posKey){
+                return this.defs.BOOL.TRUE;
+            }
+        }
     }
 
     alphaBeta(alpha, beta, depth){
         if(depth <= 0){
             // return Evaluate()
         }
-        // Check Time Up
+
+        if((this.nodes & this.checkUpLimit) === 0){
+            this.checkUp();
+        }
         this.nodes++;
-        // Check Repetitions and check fifty move rule
+        
+        if((this.isRepetition() || this.board.fiftyMove >= 100) && this.board !== 0){
+            return 0;
+        }
 
         if(this.board.ply > this.defs.MAX_DEPTH - 1){
             // return Evaluation
@@ -70,6 +91,7 @@ class searchController{
         }
         return alpha;
     }
+
     searchPosition(){
         let bestMove = this.defs.NO_MOVE;
         let bestScore = - this.defs.INFINITE;
