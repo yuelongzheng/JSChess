@@ -24,7 +24,6 @@ npm test
     ```
 
 To generate coverage use the following
-
     ```
 npm test -- --coverage
     ```
