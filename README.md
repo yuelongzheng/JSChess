@@ -25,6 +25,24 @@ npm test -- --coverage
     ```
 To view the coverage report open index.html in ./coverage/lcov-report
 
+To test specific files use the following
+    ```
+    npx jest file-name.test.js
+    ```
+
+# Development
+
+To compile changes in code run the following
+    ```
+npm run build
+    ```
+This runs webpack
+
+webdev-server can also be used
+    ```
+npm run dev
+    ```
+
 # Acknowledgements
 
 Using the following [playlist](https://www.youtube.com/watch?v=2eA0bD3wV3Q&list=PLZ1QII7yudbe4gz2gh9BCI6VDA-xafLog&index=1) as a guide
