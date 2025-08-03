@@ -1,18 +1,17 @@
-import $ from 'jquery'
+const $ = require('jquery');
 
-import { START_FEN } from './defs';
+const { ParseFen, 
+        PrintBoard } = require("./board");
 
-import { ParseFen,
-         PrintBoard } from './board';
+const { START_FEN } = require("./defs");
 
-import { parseFenOnClick, 
-        parseFenOnEnter } from './gui';
+const { parseFenOnClick, 
+        parseFenOnEnter } = require("./gui");
 
 $(function(){
-    console.log("Main init Called");
     ParseFen(START_FEN);
     PrintBoard();
 });
 
-parseFenOnClick
-parseFenOnEnter
+parseFenOnClick;
+parseFenOnEnter;

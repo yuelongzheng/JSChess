@@ -114,6 +114,16 @@ function RAND_31(){
             Math.floor((Math.random()*255) + 1) << 8 | Math.floor((Math.random()*255) + 1));
 }
 
+const mirror64 = [
+56	,	57	,	58	,	59	,	60	,	61	,	62	,	63	,
+48	,	49	,	50	,	51	,	52	,	53	,	54	,	55	,
+40	,	41	,	42	,	43	,	44	,	45	,	46	,	47	,
+32	,	33	,	34	,	35	,	36	,	37	,	38	,	39	,
+24	,	25	,	26	,	27	,	28	,	29	,	30	,	31	,
+16	,	17	,	18	,	19	,	20	,	21	,	22	,	23	,
+8	,	9	,	10	,	11	,	12	,	13	,	14	,	15	,
+0	,	1	,	2	,	3	,	4	,	5	,	6	,	7   ];
+
 /*
     In - Integer 0 - 119
     Out - Integer 0 - 64
@@ -139,6 +149,10 @@ function square120(square64){
 */
 function pieceIndex(piece, pieceNumber){
     return (piece * 10 + pieceNumber);
+}
+
+function mirror64Index(square){
+    return mirror64[square];
 }
 
 function InitFilesRanksBoard(){
@@ -254,7 +268,8 @@ module.exports = {
     SlidingPiecesStartingIndex, PieceKeys, SideKey, CastleKeys, Square120ToSquare64,
     Square64ToSquare120, Kings, Castle_Permission_Array, MOVE_FLAG_EN_PASSANT,
     MOVE_FLAG_PAWN_START, MOVE_FLAG_CASTLE, MOVE_FLAG_CAPTURE, MOVE_FLAG_PROMOTION,
-    NO_MOVE, ONE_RANK_MOVE,
+    NO_MOVE, ONE_RANK_MOVE, mirror64,
     RAND_31, square64, square120, pieceIndex, InitFilesRanksBoard, FileRankToSquare,
     getFromSquare, getToSquare, getCapturedPiece, getPromotion, InitHashKeys, InitSquare120ToSquare64,
+    mirror64Index,
 }
