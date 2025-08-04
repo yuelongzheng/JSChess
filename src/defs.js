@@ -27,6 +27,7 @@ const MAX_POSITION_MOVES = 256;
 const MAX_DEPTH = 64;
 const INFINITE = 30000;
 const MATE = 29000;
+const PV_ENTRIES = 10000;
 
 const FilesBoard = new Array(BOARD_SQUARE_NUM);
 const RanksBoard = new Array(BOARD_SQUARE_NUM);
@@ -268,7 +269,7 @@ module.exports = {
     SlidingPiecesStartingIndex, PieceKeys, SideKey, CastleKeys, Square120ToSquare64,
     Square64ToSquare120, Kings, Castle_Permission_Array, MOVE_FLAG_EN_PASSANT,
     MOVE_FLAG_PAWN_START, MOVE_FLAG_CASTLE, MOVE_FLAG_CAPTURE, MOVE_FLAG_PROMOTION,
-    NO_MOVE, ONE_RANK_MOVE, mirror64,
+    NO_MOVE, ONE_RANK_MOVE, mirror64, PV_ENTRIES,
     RAND_31, square64, square120, pieceIndex, InitFilesRanksBoard, FileRankToSquare,
     getFromSquare, getToSquare, getCapturedPiece, getPromotion, InitHashKeys, InitSquare120ToSquare64,
     mirror64Index,

@@ -20,7 +20,27 @@ const { PIECES,
         BOOL,
         SlidingPiecesStartingIndex,
         SlidingPieces, 
-        MOVE_FLAG_CASTLE} = require("./defs");
+        MOVE_FLAG_CASTLE,
+        NO_MOVE} = require("./defs");
+
+const { MakeMove, 
+        UndoMove } = require("./makemove");
+
+function MoveExists(move){
+    GenerateMoves()
+    let moveFound = NO_MOVE;
+    for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
+        moveFound = GameBoard.moveList[i];
+        if(MakeMove(moveFound) === BOOL.FALSE){
+            continue;
+        }
+        UndoMove();
+        if(move === moveFound){
+            return BOOL.TRUE;
+        }
+    }
+    return BOOL.FALSE;
+}
 
 function MOVE(from, to, captured, promoted, flag){
     return (from | (to << 7) | (captured << 14) | (promoted << 20) | flag);
@@ -253,5 +273,6 @@ function GenerateMoves(){
 }
 
 module.exports = {
-    GenerateMoves
+    GenerateMoves,
+    MoveExists
 }

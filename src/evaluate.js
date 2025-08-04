@@ -74,7 +74,7 @@ function evaluatePosition(){
     piece = PIECES.wP;
     for(pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
         square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-        score += PawnTable[square64[square]];
+        score += PawnTable[square64(square)];
     }
 
     piece = PIECES.bP;
@@ -86,7 +86,7 @@ function evaluatePosition(){
     piece = PIECES.wN;
     for(pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
         square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-        score += KnightTable[square64[square]];
+        score += KnightTable[square64(square)];
     }
 
     piece = PIECES.bN;
@@ -98,7 +98,7 @@ function evaluatePosition(){
     piece = PIECES.wB;
     for(pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
         square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-        score += BishopTable[square64[square]];
+        score += BishopTable[square64(square)];
     }
 
     piece = PIECES.bB;
@@ -110,7 +110,7 @@ function evaluatePosition(){
     piece = PIECES.wR;
     for(pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
         square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-        score += RookTable[square64[square]];
+        score += RookTable[square64(square)];
     }
 
     piece = PIECES.bR;
@@ -122,13 +122,13 @@ function evaluatePosition(){
     piece = PIECES.wQ;
     for(pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
         square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-        score += RookTable[square64[square]]/2;
+        score += RookTable[square64(square)];
     }
 
     piece = PIECES.bQ;
     for(pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
         square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-        score -= RookTable[mirror64Index(square64(square))]/2;
+        score -= RookTable[mirror64Index(square64(square))];
     }
 
     if(GameBoard.pieceNumber[PIECES.wB] >= 2){

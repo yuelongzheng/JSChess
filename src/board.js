@@ -30,7 +30,8 @@ const { MAX_DEPTH,
         CastleKeys, 
         PieceVal,
         PieceChar, 
-        RankChar } = require("./defs");
+        RankChar, 
+        PV_ENTRIES} = require("./defs");
 
 const { PrintSquare } = require("./io");
 
@@ -43,7 +44,6 @@ GameBoard.fiftyMove = 0;
 // A ply is one turn take by a player, keep a count of every ply
 GameBoard.hisPly = 0;
 GameBoard.history = [];
-InitBoardVariables();
 // Number of plys made in the search tree 
 GameBoard.ply = 0;
 /*
@@ -75,6 +75,13 @@ GameBoard.posKey = 0;
 GameBoard.moveList = new Array(MAX_DEPTH * MAX_POSITION_MOVES);
 GameBoard.moveScores = new Array(MAX_DEPTH * MAX_POSITION_MOVES);
 GameBoard.moveListStart = new Array(MAX_DEPTH); 
+
+GameBoard.pvTable = [];
+GameBoard.pvArray = new Array(MAX_DEPTH);
+GameBoard.searchHistory = new Array(14 * BOARD_SQUARE_NUM);
+GameBoard.searchKillers = new Array(3 * MAX_DEPTH);
+
+InitBoardVariables();
 
 function CheckBoard(){
     let temp_pieceNum = new Array(GameBoard.pieceNumber.length);
@@ -406,6 +413,13 @@ function InitBoardVariables(){
             castlePermission : 0,
             enPassant : 0,
             fiftyMove : 0,
+            posKey : 0
+        });
+    }
+
+    for(let i = 0 ; i < PV_ENTRIES ; i++){
+        GameBoard.pvTable.push({
+            move : NO_MOVE,
             posKey : 0
         });
     }

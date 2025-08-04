@@ -5,14 +5,19 @@ const { ParseFen,
 
 const { PerftTest } = require('./perft');
 
+const { START_FEN } = require('./defs');
+
+const { searchPosition } = require('./search');
+
 let depth = 5;
 
 function parseFenOnAction(){
     let fenStr = $("#fenIn").val();
-    ParseFen(fenStr)
+    ParseFen(START_FEN)
     PrintBoard();
-    PerftTest(depth);
+    searchPosition();
 };
+
 const parseFenOnClick = $("#SetFen").on("click", function(){
     parseFenOnAction();
 });

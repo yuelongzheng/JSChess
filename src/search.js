@@ -1,14 +1,26 @@
-const { GameBoard } = require("./board");
+const { GameBoard, 
+        SquareAttacked } = require("./board");
 
 const { NO_MOVE, 
         INFINITE, 
         BOOL,
-        MAX_DEPTH } = require("./defs");
-const { evaluatePosition } = require("./evaluate");
+        MAX_DEPTH, 
+        pieceIndex,
+        Kings,
+        MATE,
+        PV_ENTRIES} = require("./defs");
 
-const { UndoMove } = require("./makemove");
+const { evaluatePosition } = require("./evaluate");
+const { PrintMove } = require("./io");
+
+const { UndoMove, 
+        MakeMove } = require("./makemove");
 
 const { GenerateMoves } = require("./movegen");
+
+const { storePvMove,
+        probePvTable, 
+        getPvLine} = require("./pvtable");
 
 const searchController = {}
 
@@ -43,6 +55,8 @@ function isRepetition(){
 }
 
 function alphaBeta(alpha, beta, depth){
+
+    searchController.nodes++;
     if(depth <= 0){
         return evaluatePosition();
     }
@@ -51,14 +65,19 @@ function alphaBeta(alpha, beta, depth){
     if((searchController.nodes & checkUpNodes) === 0){
         checkUp();
     }
-    searchController.nodes++;
+    // searchController.nodes++;
 
-    if((isRepetition() || GameBoard.fiftyMove >= 100) && GameBoard.ply != 0) {
+    if((isRepetition() || GameBoard.fiftyMove >= 100) && GameBoard.ply !== 0) {
         return 0;
     }
     
     if(GameBoard.ply > MAX_DEPTH - 1){
         return evaluatePosition();
+    }
+
+    let inCheck = SquareAttacked(GameBoard.pieceList[pieceIndex(Kings[GameBoard.side], 0)], GameBoard.side^1);
+    if(inCheck === BOOL.TRUE){
+        depth++; // look deeper to avoid checks
     }
     let score = -INFINITE;
 
@@ -97,23 +116,73 @@ function alphaBeta(alpha, beta, depth){
             // update history table
         }
     }
-    // Mate Check or stalemate check
+
+    if(legalMoves === 0){
+        if(inCheck === BOOL.TRUE){
+            return (-MATE + GameBoard.ply);
+        }
+        else{
+            return 0;
+        }
+    }
+
     if(alpha !== oldAlpha){
-        // store principal vairaition move
+        storePvMove(bestMove);
     }
     return alpha;
+}
+
+function clearPvTable(){
+    for(let i = 0 ; i < PV_ENTRIES ; i++){
+        GameBoard.pvTable[i].move = NO_MOVE;
+        GameBoard.pvTable[i].posKey = 0;
+    }
+}
+
+function clearForSearch(){
+    for(let i = 0 ; i < GameBoard.searchHistory.length ; i++){
+        GameBoard.searchHistory[i] = 0;
+    }
+    for(let i = 0 ; i < GameBoard.searchKillers.length ; i++){
+        GameBoard.searchKillers[i] = 0;
+    }
+    clearPvTable();
+    GameBoard.ply = 0;
+    searchController.nodes = 0;
+    searchController.failHigh = 0;
+    searchController.failHighFirst = 0;
+    searchController.start = Date.now();
+    searchController.stop = BOOL.FALSE;
 }
 
 function searchPosition(){
     let bestMove = NO_MOVE;
     let bestScore = -INFINITE;
+    let line;
+    let pvNum;
+    clearForSearch();
 
-    for(let currentDepth = 1 ; currentDepth <= searchController.depth ; currentDepth++){
+    for(let currentDepth = 1 ; currentDepth <= /*searchController.depth*/ 5  ; currentDepth++){
+        bestScore = alphaBeta(-INFINITE, INFINITE, currentDepth);
         if(searchController.stop === BOOL.TRUE){
             break;
         }
+        bestMove = probePvTable();
+        line = 'Depth: ' + currentDepth
+        line +=' Best Move: ' + PrintMove(bestMove) 
+        line += ' Score: ' + bestScore
+        line += ' nodes: ' + searchController.nodes;
+        pvNum = getPvLine(currentDepth);
+        line += ' Pv :';
+        for(let c = 0 ; c < pvNum ; c++){
+            line += ' ' + PrintMove(GameBoard.pvArray[c]);
+        }
+        console.log(line);
     }
     searchController.bestMove = bestMove;
     searchController.thinking = BOOL.FALSE;
 }
 
+module.exports = {
+    searchPosition
+}
