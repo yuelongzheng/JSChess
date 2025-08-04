@@ -13,7 +13,7 @@ let depth = 5;
 
 function parseFenOnAction(){
     let fenStr = $("#fenIn").val();
-    ParseFen(START_FEN)
+    ParseFen(fenStr);
     PrintBoard();
     searchPosition();
 };

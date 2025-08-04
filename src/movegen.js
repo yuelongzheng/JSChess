@@ -21,10 +21,25 @@ const { PIECES,
         SlidingPiecesStartingIndex,
         SlidingPieces, 
         MOVE_FLAG_CASTLE,
-        NO_MOVE} = require("./defs");
+        NO_MOVE,
+        getCapturedPiece,
+        getFromSquare} = require("./defs");
 
 const { MakeMove, 
         UndoMove } = require("./makemove");
+
+// mvv - Most Valuable Victim, lva - least valuable attacker
+let mvvLvaValue = [0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600];
+let mvvLvaScores = new Array(14 * 14);
+initMvvLva();
+
+function initMvvLva(){
+    for(let attacker = PIECES.wP ; attacker <= PIECES.bK ; attacker++){
+        for(let victim = PIECES.wP ; victim <= PIECES.bK ; victim++){
+            mvvLvaScores[victim * 14 + attacker] = mvvLvaValue[victim] + 6 - (mvvLvaValue[attacker]/100);
+        }
+    }
+}
 
 function MoveExists(move){
     GenerateMoves()
@@ -48,18 +63,19 @@ function MOVE(from, to, captured, promoted, flag){
 
 function AddCaptureMove(move){
     GameBoard.moveList[GameBoard.moveListStart[GameBoard.ply + 1] ] = move;
-    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]++] = 0; // For alpha-beta search ordering
+    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]++] = 
+    mvvLvaScores[getCapturedPiece(move) * 14 + GameBoard.pieces[getFromSquare(move)]] + 1000000; 
 }
 
 // Quiet moves are moves that do not alter material
 function AddQuietMove(move){
     GameBoard.moveList[GameBoard.moveListStart[GameBoard.ply + 1] ] = move;
-    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]++] = 0; // For alpha-beta search ordering
+    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]++] = 0;
 }
 
 function AddEnPassantMove(move){
     GameBoard.moveList[GameBoard.moveListStart[GameBoard.ply + 1] ] = move;
-    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]++] = 0; // For alpha-beta search ordering
+    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]++] = 105 + 1000000;
 }
 
 function AddWhitePawnCaptureMove(from, to, capture){

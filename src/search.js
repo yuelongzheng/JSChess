@@ -40,7 +40,7 @@ const checkUpNodes = 2047;
 function pickNextMove(moveNum){
     let bestScore = -1;
     let bestIndex = moveNum;
-    for(i = moveNum ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
+    for(let i = moveNum ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
         if(GameBoard.moveScores[i] > bestScore){
             bestScore = GameBoard.moveScores[i];
             bestIndex = i;
@@ -122,7 +122,7 @@ function quiescence(alpha, beta) {
         
         if(score > alpha){
             if(score >= beta){
-                if(legalMoves == 1){
+                if(legalMoves === 1){
                     searchController.failHighFirst++;
                 }
                 searchController.failHigh++;
@@ -175,8 +175,8 @@ function alphaBeta(alpha, beta, depth){
     // Order principal vairiation
 
     for(let moveNum = GameBoard.moveListStart[GameBoard.ply]; moveNum < GameBoard.moveListStart[GameBoard.ply + 1] ; moveNum++){
-        pickNextMove();
-        
+        pickNextMove(moveNum);
+
         move = GameBoard.moveList[moveNum];
         if(MakeMove(move) === BOOL.FALSE){
             continue;
@@ -262,6 +262,10 @@ function searchPosition(){
         line += ' Pv :';
         for(let c = 0 ; c < pvNum ; c++){
             line += ' ' + PrintMove(GameBoard.pvArray[c]);
+        }
+        // High 80 is okay, 90 is good
+        if(currentDepth != 1){
+            line += (" Ordering: " + ((searchController.failHighFirst/searchController.failHigh)*100).toFixed(2) + "%");
         }
         console.log(line);
     }
