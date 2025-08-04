@@ -221,7 +221,6 @@ function UpdateListsMaterial(){
             GameBoard.pieceNumber[piece]++;
         }
     }
-    PrintPieceList();
 }
 
 function ResetBoard(){
@@ -313,7 +312,6 @@ function ParseFen(fen){
     }
     GameBoard.posKey = GeneratePosKey();
     UpdateListsMaterial();
-    PrintSquareAttacked();
 }
 
 /*

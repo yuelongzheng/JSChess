@@ -16,7 +16,7 @@ const { PrintMove } = require("./io");
 const { UndoMove, 
         MakeMove } = require("./makemove");
 
-const { GenerateMoves } = require("./movegen");
+const { GenerateMoves, GenerateCaptures } = require("./movegen");
 
 const { storePvMove,
         probePvTable, 
@@ -37,6 +37,26 @@ searchController.thinking;
 
 const checkUpNodes = 2047; 
 
+function pickNextMove(moveNum){
+    let bestScore = -1;
+    let bestIndex = moveNum;
+    for(i = moveNum ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
+        if(GameBoard.moveScores[i] > bestScore){
+            bestScore = GameBoard.moveScores[i];
+            bestIndex = i;
+        }
+    }
+    if(bestIndex !== moveNum){
+        let tmp = GameBoard.moveScores[moveNum];
+        GameBoard.moveScores[moveNum] = GameBoard.moveScores[bestIndex];
+        GameBoard.moveScores[bestIndex] = tmp;
+        
+        tmp = GameBoard.moveList[moveNum];
+        GameBoard.moveList[moveNum] = GameBoard.moveList[bestIndex];
+        GameBoard.moveList[bestIndex] = tmp;
+    }
+}
+
 function checkUp(){
     if((Date.now() - searchController.start) > searchController.time){
         searchController.stop = BOOL.TRUE;
@@ -54,18 +74,82 @@ function isRepetition(){
     return BOOL.FALSE;
 }
 
+// Dealing with the horizon effect, stop hanging pieces
+function quiescence(alpha, beta) {
+    if((searchController.nodes & checkUpNodes) === 0){
+        checkUp();
+    }
+    searchController.nodes++;
+
+    if((isRepetition() || GameBoard.fiftyMove >= 100) && GameBoard.ply !== 0) {
+        return 0;
+    }
+    
+    if(GameBoard.ply > MAX_DEPTH - 1){
+        return evaluatePosition();
+    }
+
+    let score = evaluatePosition();
+    if(score >= beta){
+        return beta;
+    }
+
+    if(score > alpha){
+        alpha = score;
+    }
+
+    GenerateCaptures();
+
+    let legalMoves = 0;
+    let oldAlpha = alpha;
+    let bestMove = NO_MOVE;
+    let move = NO_MOVE;
+    // Get principal variation
+    // Order principal vairiation
+
+    for(let moveNum = GameBoard.moveListStart[GameBoard.ply]; moveNum < GameBoard.moveListStart[GameBoard.ply + 1] ; moveNum++){
+        pickNextMove(moveNum);
+        move = GameBoard.moveList[moveNum];
+        if(MakeMove(move) === BOOL.FALSE){
+            continue;
+        }
+        legalMoves++;
+        score = -quiescence(-beta, -alpha);
+        UndoMove(); 
+        if(searchController.stop === BOOL.TRUE){
+            return 0;
+        }
+        
+        if(score > alpha){
+            if(score >= beta){
+                if(legalMoves == 1){
+                    searchController.failHighFirst++;
+                }
+                searchController.failHigh++;
+                return beta;
+            }
+            alpha = score;
+            bestMove = move;
+        }
+    }
+
+    if(alpha !== oldAlpha){
+        storePvMove(bestMove);
+    }
+    return alpha;
+}
+
 function alphaBeta(alpha, beta, depth){
 
-    searchController.nodes++;
     if(depth <= 0){
-        return evaluatePosition();
+        return quiescence(alpha, beta);
     }
 
     // equaivalent of searchController.nodes % 2048, & is just faster
     if((searchController.nodes & checkUpNodes) === 0){
         checkUp();
     }
-    // searchController.nodes++;
+    searchController.nodes++;
 
     if((isRepetition() || GameBoard.fiftyMove >= 100) && GameBoard.ply !== 0) {
         return 0;
@@ -91,6 +175,8 @@ function alphaBeta(alpha, beta, depth){
     // Order principal vairiation
 
     for(let moveNum = GameBoard.moveListStart[GameBoard.ply]; moveNum < GameBoard.moveListStart[GameBoard.ply + 1] ; moveNum++){
+        pickNextMove();
+        
         move = GameBoard.moveList[moveNum];
         if(MakeMove(move) === BOOL.FALSE){
             continue;

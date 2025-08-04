@@ -272,7 +272,104 @@ function GenerateMoves(){
     }
 }
 
+function GenerateCaptures(){
+    GameBoard.moveListStart[GameBoard.ply + 1] = GameBoard.moveListStart[GameBoard.ply];
+
+    if(GameBoard.side === COLOURS.WHITE){
+        let pieceType = PIECES.wP;
+        let square;
+        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[pieceType] ; pieceNum++){
+            square = GameBoard.pieceList[pieceIndex(pieceType, pieceNum)];
+            let leftDiagonal = square + 9;
+            if(IsSquareOffBoard(leftDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[leftDiagonal]] === COLOURS.BLACK){
+                AddWhitePawnCaptureMove(square, leftDiagonal, GameBoard.pieces[leftDiagonal]);
+            }
+            let rightDiagonal = square + 11;
+            if(IsSquareOffBoard(rightDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[rightDiagonal]] === COLOURS.BLACK){
+                AddWhitePawnCaptureMove(square, rightDiagonal, GameBoard.pieces[rightDiagonal]);
+            }
+            
+            if(GameBoard.enPassant !== SQUARES.NO_SQUARE){
+                if(leftDiagonal === GameBoard.enPassant){
+                    AddEnPassantMove(MOVE(square, leftDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+                }
+                if(rightDiagonal === GameBoard.enPassant){
+                    AddEnPassantMove(MOVE(square, rightDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+                }
+            }
+        }
+    }
+    else {
+        let pieceType = PIECES.bP;
+        let square;
+        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[pieceType] ; pieceNum++){
+            square = GameBoard.pieceList[pieceIndex(pieceType, pieceNum)];
+            let leftDiagonal = square - 9;
+            if(IsSquareOffBoard(leftDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[leftDiagonal]] === COLOURS.WHITE){
+                AddBlackPawnCaptureMove(square, leftDiagonal, GameBoard.pieces[leftDiagonal]);
+            }
+            let rightDiagonal = square - 11;
+            if(IsSquareOffBoard(rightDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[rightDiagonal]] === COLOURS.WHITE){
+                AddBlackPawnCaptureMove(square, rightDiagonal, GameBoard.pieces[rightDiagonal]);
+            }
+            
+            if(GameBoard.enPassant !== SQUARES.NO_SQUARE){
+                if(leftDiagonal === GameBoard.enPassant){
+                    AddEnPassantMove(MOVE(square, leftDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+                }
+                if(rightDiagonal === GameBoard.enPassant){
+                    AddEnPassantMove(MOVE(square, rightDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+                }
+            }
+        }
+    }
+
+    let index = NonSlidingStartingIndex[GameBoard.side];
+    let piece = NonSlidingPieces[index++];
+    while(piece !== 0){
+        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
+            let square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
+            for(let i = 0 ; i < PieceToDirectionsLength[piece] ; i++){
+                let direction = PieceToDirections[piece][i];
+                let target_square = square + direction;
+                if(IsSquareOffBoard(target_square) === BOOL.TRUE){
+                    continue;
+                }
+                if(GameBoard.pieces[target_square] !== PIECES.EMPTY){
+                    if(PieceCol[GameBoard.pieces[target_square]] !== GameBoard.side){
+                        AddCaptureMove(MOVE(square, target_square, GameBoard.pieces[target_square], PIECES.EMPTY, 0));
+                    }
+                }
+            }
+        }
+        piece = NonSlidingPieces[index++];
+    }
+
+    index = SlidingPiecesStartingIndex[GameBoard.side];
+    piece = SlidingPieces[index++];
+    while(piece !== 0){
+        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
+            let square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
+            for(let i = 0 ; i < PieceToDirectionsLength[piece] ; i++){
+                let direction = PieceToDirections[piece][i];
+                let target_square = square + direction;
+                while(IsSquareOffBoard(target_square) === BOOL.FALSE){
+                    if(GameBoard.pieces[target_square] !== PIECES.EMPTY){
+                        if(PieceCol[GameBoard.pieces[target_square]] !== GameBoard.side){
+                            AddCaptureMove(MOVE(square, target_square, GameBoard.pieces[target_square], PIECES.EMPTY, 0));
+                        }
+                        break;
+                    }
+                    target_square += direction;
+                }
+            }
+        }
+        piece = SlidingPieces[index++];
+    }
+}
+
 module.exports = {
     GenerateMoves,
-    MoveExists
+    MoveExists,
+    GenerateCaptures
 }
