@@ -23,7 +23,10 @@ const { PIECES,
         MOVE_FLAG_CASTLE,
         NO_MOVE,
         getCapturedPiece,
-        getFromSquare} = require("./defs");
+        getFromSquare,
+        MAX_DEPTH,
+        BOARD_SQUARE_NUM,
+        getToSquare} = require("./defs");
 
 const { MakeMove, 
         UndoMove } = require("./makemove");
@@ -70,7 +73,19 @@ function AddCaptureMove(move){
 // Quiet moves are moves that do not alter material
 function AddQuietMove(move){
     GameBoard.moveList[GameBoard.moveListStart[GameBoard.ply + 1] ] = move;
-    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]++] = 0;
+    GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]] = 0;
+    
+    if(move === GameBoard.searchKillers[GameBoard.ply]){
+        GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]] = 900000;
+    }
+    else if(move === GameBoard.searchKillers[GameBoard.ply + MAX_DEPTH]){
+        GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]] = 800000;
+    }
+    else{
+        GameBoard.moveScores[GameBoard.moveListStart[GameBoard.ply + 1]] =
+         GameBoard.searchHistory[GameBoard.pieces[getFromSquare(move)] * BOARD_SQUARE_NUM + getToSquare(move)];
+    }
+    GameBoard.moveListStart[GameBoard.ply + 1]++
 }
 
 function AddEnPassantMove(move){

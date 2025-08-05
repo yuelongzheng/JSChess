@@ -8,7 +8,11 @@ const { NO_MOVE,
         pieceIndex,
         Kings,
         MATE,
-        PV_ENTRIES} = require("./defs");
+        PV_ENTRIES,
+        MOVE_FLAG_CAPTURE,
+        getFromSquare,
+        BOARD_SQUARE_NUM,
+        getToSquare} = require("./defs");
 
 const { evaluatePosition } = require("./evaluate");
 const { PrintMove } = require("./io");
@@ -104,9 +108,7 @@ function quiescence(alpha, beta) {
     let oldAlpha = alpha;
     let bestMove = NO_MOVE;
     let move = NO_MOVE;
-    // Get principal variation
-    // Order principal vairiation
-
+    
     for(let moveNum = GameBoard.moveListStart[GameBoard.ply]; moveNum < GameBoard.moveListStart[GameBoard.ply + 1] ; moveNum++){
         pickNextMove(moveNum);
         move = GameBoard.moveList[moveNum];
@@ -171,8 +173,18 @@ function alphaBeta(alpha, beta, depth){
     let oldAlpha = alpha;
     let bestMove = NO_MOVE;
     let move = NO_MOVE;
+
     // Get principal variation
     // Order principal vairiation
+    let pvMove = probePvTable();
+    if(pvMove !== NO_MOVE){
+        for(let moveNum = GameBoard.moveListStart[GameBoard.ply]; moveNum < GameBoard.moveListStart[GameBoard.ply + 1] ; moveNum++){
+            if(GameBoard.moveList[moveNum] === pvMove){
+                GameBoard.moveScores[moveNum] = 2000000;
+                break;
+            }
+        }
+    }
 
     for(let moveNum = GameBoard.moveListStart[GameBoard.ply]; moveNum < GameBoard.moveListStart[GameBoard.ply + 1] ; moveNum++){
         pickNextMove(moveNum);
@@ -195,11 +207,21 @@ function alphaBeta(alpha, beta, depth){
                 }
                 searchController.failHigh++;
                 // Update killer moves - most recent two moves that caused a beta cut-off
+                if((move & MOVE_FLAG_CAPTURE) === 0){
+                    // second killer move for this ply
+                    GameBoard.searchKillers[MAX_DEPTH + GameBoard.ply] = GameBoard.searchKillers[GameBoard.ply];
+                    // first killer move for this ply
+                    GameBoard.searchKillers[GameBoard.ply] = move;
+                }
                 return beta;
+            }
+            // update history table
+            if((move & MOVE_FLAG_CAPTURE) === 0){
+                GameBoard.searchHistory[GameBoard.pieces[getFromSquare(move)] * BOARD_SQUARE_NUM + getToSquare(move)] 
+                += depth * depth;
             }
             alpha = score;
             bestMove = move;
-            // update history table
         }
     }
 
@@ -248,7 +270,7 @@ function searchPosition(){
     let pvNum;
     clearForSearch();
 
-    for(let currentDepth = 1 ; currentDepth <= /*searchController.depth*/ 5  ; currentDepth++){
+    for(let currentDepth = 1 ; currentDepth <= /*searchController.depth*/ 6 ; currentDepth++){
         bestScore = alphaBeta(-INFINITE, INFINITE, currentDepth);
         if(searchController.stop === BOOL.TRUE){
             break;
