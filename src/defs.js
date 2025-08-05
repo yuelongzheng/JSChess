@@ -258,6 +258,15 @@ let NO_MOVE = 0;
 
 let ONE_RANK_MOVE = 10;
 
+let GameController = {};
+GameController.EngineSide = COLOURS.BOTH;
+GameController.PlayerSide = COLOURS.BOTH;
+GameController.GameOver = BOOL.FALSE;
+
+let UserMove = {};
+UserMove.from = SQUARES.NO_SQUARE;
+UserMove.to = SQUARES.NO_SQUARE;
+
 module.exports = {
     PIECES, BOARD_SQUARE_NUM, ACTIVE_SQUARE_NUM, FILES, RANKS, COLOURS, CASTLE_BIT,
     SQUARES, BOOL, MAX_GAME_MOVES, MAX_POSITION_MOVES, MAX_DEPTH, INFINITE, MATE,
@@ -269,7 +278,7 @@ module.exports = {
     SlidingPiecesStartingIndex, PieceKeys, SideKey, CastleKeys, Square120ToSquare64,
     Square64ToSquare120, Kings, Castle_Permission_Array, MOVE_FLAG_EN_PASSANT,
     MOVE_FLAG_PAWN_START, MOVE_FLAG_CASTLE, MOVE_FLAG_CAPTURE, MOVE_FLAG_PROMOTION,
-    NO_MOVE, ONE_RANK_MOVE, mirror64, PV_ENTRIES,
+    NO_MOVE, ONE_RANK_MOVE, mirror64, PV_ENTRIES, GameController, UserMove,
     RAND_31, square64, square120, pieceIndex, InitFilesRanksBoard, FileRankToSquare,
     getFromSquare, getToSquare, getCapturedPiece, getPromotion, InitHashKeys, InitSquare120ToSquare64,
     mirror64Index,

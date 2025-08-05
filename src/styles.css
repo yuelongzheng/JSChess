@@ -7,3 +7,59 @@
     width: 480px;
     left: 60px;
 }
+
+#Board {
+    position:relative;
+    top : 20px;
+    left : 60px;
+    width: 480px;
+    height: 480px;
+    border-style: solid;
+    border-width: 2px;
+}
+
+#EngineOutput {
+    position: absolute;
+    left: 600px;
+    top: 250px;
+}
+
+.Square{
+    position: absolute;
+    width: 60px;
+    height: 60px;
+}
+
+.Dark { 
+    background-color: #5fbcd3;
+}
+
+.Light{
+    background-color: #afdde9;
+}
+
+.SquareSelected{
+    background-color: #216778;
+}
+
+.Rank1{ top: 420px;}
+.Rank2{ top: 360px;}
+.Rank3{ top: 300px;}
+.Rank4{ top: 240px;}
+.Rank5{ top: 180px;}
+.Rank6{ top: 120px;}
+.Rank7{ top: 60px;}
+.Rank8{ top: 0px;}
+
+.File1{ left : 0px;}
+.File2{ left : 60px;}
+.File3{ left : 120px;}
+.File4{ left : 180px;}
+.File5{ left : 240px;}
+.File6{ left : 300px;}
+.File7{ left : 360px;}
+.File8{ left : 420px;}
+
+.Piece{
+    position : absolute;
+}
