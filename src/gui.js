@@ -6,7 +6,7 @@ const { ParseFen,
 
 const { PerftTest } = require('./perft');
 
-const { START_FEN, square120, FilesBoard, RanksBoard, PIECES, SideChar, PieceCol, PieceChar, FileRankToSquare } = require('./defs');
+const { START_FEN, square120, FilesBoard, RanksBoard, PIECES, SideChar, PieceCol, PieceChar, FileRankToSquare, UserMove, SQUARES } = require('./defs');
 
 const { searchPosition } = require('./search');
 const { PrintSquare } = require('./io');
@@ -82,7 +82,6 @@ function setSquareSelected(square){
 }
 
 function clickedSquare(pageX, pageY){
-    console.log("Clicked Square At : " + pageX + ", " + pageY);
     let position = $('#Board').position();
 
     let boardOriginX = Math.floor(position.left);
@@ -97,16 +96,38 @@ function clickedSquare(pageX, pageY){
     let square = FileRankToSquare(file, rank);
     console.log("Clicked Square : " + PrintSquare(square));
     setSquareSelected(square);
+    return square;
+}
+
+function makeUserMove(){
+    if(UserMove.from !== SQUARES.NO_SQUARE && UserMove.to !== SQUARES.NO_SQUARE){
+        console.log("User Move: " + PrintSquare(UserMove.from) + PrintSquare(UserMove.to));
+        deselectSquare(UserMove.from);
+        deselectSquare(UserMove.to);
+
+        UserMove.from = SQUARES.NO_SQUARE;
+        UserMove.to = SQUARES.NO_SQUARE;
+    }
+
 }
 
 const clickPiece = $(document).on('click', '.Piece', function (e){
     console.log('Piece Click');
-    clickedSquare(e.pageX, e.pageY);
+    if(UserMove.from === SQUARES.NO_SQUARE){
+        UserMove.from = clickedSquare(e.pageX, e.pageY);
+    }
+    else{
+        UserMove.to = clickedSquare(e.pageX, e.pageY);
+    }
+    makeUserMove();
 });
 
 const clickSquare = $(document).on('click', '.Square', function (e){
     console.log('Square Click');
-    clickedSquare(e.pageX, e.pageY);
+    if(UserMove.from !== SQUARES.NO_SQUARE){
+        UserMove.to = clickedSquare(e.pageX, e.pageY);
+        makeUserMove();
+    }
 });
 
 module.exports = {
