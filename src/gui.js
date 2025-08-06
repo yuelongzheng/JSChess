@@ -4,29 +4,17 @@ const { ParseFen,
         PrintBoard, 
         GameBoard} = require("./board");
 
-const { START_FEN, 
-        square120, 
-        FilesBoard, 
-        RanksBoard, 
-        PIECES, 
-        SideChar, 
-        PieceCol, 
-        PieceChar, 
-        FileRankToSquare, 
-        UserMove, 
-        SQUARES, 
-        NO_MOVE,
-        getFromSquare,
-        getToSquare,
-        getPromotion} = require('./defs');
+const { PerftTest } = require('./perft');
 
-const { PrintSquare} = require('./io');
-const { MakeMove, UndoMove } = require('./makemove');
-const { GenerateMoves } = require('./movegen');
+const { START_FEN, square120, FilesBoard, RanksBoard, PIECES, SideChar, PieceCol, PieceChar, FileRankToSquare, UserMove, SQUARES, NO_MOVE, BOOL } = require('./defs');
+
+const { searchPosition } = require('./search');
+const { PrintSquare } = require('./io');
+const { parseMove } = require('./movegen');
+const { MakeMove } = require('./makemove');
+
 
 let depth = 5;
-
-let gb = GameBoard;
 
 function parseFenOnAction(){
     let fenStr = $("#fenIn").val();
@@ -77,26 +65,31 @@ function newGame(fenStr){
     setInitialBoardPieces();
 }
 
+function pieceIsOnSquare(square, top, left){
+    if((RanksBoard[square] === 7 - Math.round(top/60)) &&
+        (FilesBoard[square] === Math.round(left/60))){
+            return BOOL.TRUE;
+    }
+    return BOOL.FALSE;
+}
+
 function deselectSquare(square){
-    $('.Square').each(function(){
-        if( (RanksBoard[square] === 7 - Math.round($(this).position().top/60)) &&
-            (FilesBoard[square] === Math.round($(this).position().left/60))){
-                $(this).removeClass("SquareSelected");
-            }
+    $('.Square').each(function(index){
+        if(pieceIsOnSquare(square, $(this).position().top, $(this).position().left) === BOOL.TRUE){
+            $(this).removeClass("SquareSelected");
+        }
     });
 }
 
 function setSquareSelected(square){
-    $('.Square').each(function(){
-        if( (RanksBoard[square] === 7 - Math.round($(this).position().top/60)) &&
-            (FilesBoard[square] === Math.round($(this).position().left/60))){
-                $(this).addClass("SquareSelected");
-            }
+    $('.Square').each(function(index){
+        if(pieceIsOnSquare(square, $(this).position().top, $(this).position().left) === BOOL.TRUE){
+            $(this).addClass("SquareSelected");
+        }
     });
 }
 
 function clickedSquare(pageX, pageY){
-    console.log("Clicked Square At : " + pageX + ", " + pageY);
     let position = $('#Board').position();
 
     let boardOriginX = Math.floor(position.left);
@@ -116,18 +109,18 @@ function clickedSquare(pageX, pageY){
 
 function makeUserMove(){
     if(UserMove.from !== SQUARES.NO_SQUARE && UserMove.to !== SQUARES.NO_SQUARE){
+        console.log("User Move: " + PrintSquare(UserMove.from) + PrintSquare(UserMove.to));
 
-        let parsedMove = parseMove(UserMove.from, UserMove.to);
+        let parsed = parseMove(UserMove.from, UserMove.to);
 
-        if(parsedMove !== NO_MOVE){
-            MakeMove(parsedMove);
+        if(parsed !== NO_MOVE){
+            MakeMove(parsed);
             PrintBoard();
         }
-        
+
         deselectSquare(UserMove.from);
         deselectSquare(UserMove.to);
 
-        console.log("User Move: " + PrintSquare(UserMove.from) + PrintSquare(UserMove.to));
         UserMove.from = SQUARES.NO_SQUARE;
         UserMove.to = SQUARES.NO_SQUARE;
     }
