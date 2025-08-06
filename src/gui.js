@@ -13,11 +13,11 @@ const { PrintSquare } = require('./io');
 const { parseMove } = require('./movegen');
 const { MakeMove } = require('./makemove');
 
+
 let depth = 5;
 
 function parseFenOnAction(){
     let fenStr = $("#fenIn").val();
-    ParseFen(fenStr);
     newGame(fenStr);
 };
 
@@ -45,7 +45,7 @@ function setInitialBoardPieces(){
 
     for(let square = 0 ; square < 64 ; square++){
         pieceSquare = square120(square);
-        piece = GameBoard.pieces[pieceSquare];
+        piece = gb.pieces[pieceSquare];
         file = FilesBoard[pieceSquare];
         rank = RanksBoard[pieceSquare];
 
@@ -124,7 +124,6 @@ function makeUserMove(){
         UserMove.from = SQUARES.NO_SQUARE;
         UserMove.to = SQUARES.NO_SQUARE;
     }
-
 }
 
 const clickPiece = $(document).on('click', '.Piece', function (e){
@@ -145,6 +144,40 @@ const clickSquare = $(document).on('click', '.Square', function (e){
         makeUserMove();
     }
 });
+
+function parseMove(from ,to){
+    GenerateMoves();
+
+    let move = NO_MOVE;
+    let promoted_piece = PIECES.EMPTY;
+    let found = BOOL.FALSE;
+
+    for(let i = gb.moveListStart[gb.ply] ; i < gb.moveListStart[gb.ply + 1] ; i++){
+        move = gb.moveList[i];
+        if(getFromSquare(move) === from && getToSquare(move) === to){
+            promoted_piece = getPromotion(move);
+            if(promoted_piece !== PIECES.EMPTY){
+                if((promoted_piece === PIECES.wQ && gb.side === COLOURS.WHITE) ||
+                   (promoted_piece === PIECES.bQ && gb.side === COLOURS.BLACK)){
+                    found = BOOL.TRUE;
+                    break;
+                   }
+                   continue;
+            }
+            found = BOOL.TRUE;
+            break;
+        }
+    }
+
+    if(found !== BOOL.FALSE){
+        if(MakeMove(move) === BOOL.FALSE){
+            return NO_MOVE;
+        }
+        UndoMove();
+        return move;
+    }
+    return NO_MOVE;
+}
 
 module.exports = {
     parseFenOnClick,

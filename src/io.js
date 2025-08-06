@@ -53,5 +53,5 @@ function PrintMoveList(){
 module.exports = {
     PrintSquare,
     PrintMove,
-    PrintMoveList
+    PrintMoveList,
 }

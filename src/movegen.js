@@ -32,7 +32,7 @@ const { PIECES,
 const { MakeMove, 
         UndoMove } = require("./makemove");
 
-// mvv - Most Valuable Victim, lva - least valuable attacker
+mvv - Most Valuable Victim, lva - least valuable attacker
 let mvvLvaValue = [0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600];
 let mvvLvaScores = new Array(14 * 14);
 initMvvLva();
@@ -43,22 +43,6 @@ function initMvvLva(){
             mvvLvaScores[victim * 14 + attacker] = mvvLvaValue[victim] + 6 - (mvvLvaValue[attacker]/100);
         }
     }
-}
-
-function MoveExists(move){
-    GenerateMoves()
-    let moveFound = NO_MOVE;
-    for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
-        moveFound = GameBoard.moveList[i];
-        if(MakeMove(moveFound) === BOOL.FALSE){
-            continue;
-        }
-        UndoMove();
-        if(move === moveFound){
-            return BOOL.TRUE;
-        }
-    }
-    return BOOL.FALSE;
 }
 
 function MOVE(from, to, captured, promoted, flag){
@@ -302,6 +286,22 @@ function GenerateMoves(){
         }
         piece = SlidingPieces[index++];
     }
+}
+
+function MoveExists(move){
+    GenerateMoves()
+    let moveFound = NO_MOVE;
+    for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
+        moveFound = GameBoard.moveList[i];
+        if(MakeMove(moveFound) === BOOL.FALSE){
+            continue;
+        }
+        UndoMove();
+        if(move === moveFound){
+            return BOOL.TRUE;
+        }
+    }
+    return BOOL.FALSE;
 }
 
 function GenerateCaptures(){
