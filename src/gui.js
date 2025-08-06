@@ -18,7 +18,15 @@ const { START_FEN,
         UserMove, 
         SQUARES, 
         NO_MOVE, 
-        BOOL } = require('./defs');
+        BOOL, 
+        getFromSquare,
+        getToSquare,
+        MOVE_FLAG_EN_PASSANT,
+        COLOURS,
+        getCapturedPiece,
+        MOVE_FLAG_CASTLE,
+        getPromotion,
+        ONE_RANK_MOVE} = require('./defs');
 
 const { searchPosition } = require('./search');
 const { PrintSquare } = require('./io');
@@ -46,24 +54,26 @@ function clearAllPieces(){
     $(".Piece").remove();
 }
 
+function addPieceInGUI(square, piece){
+    let file = FilesBoard[square];
+    let rank = RanksBoard[square];
+    let rankName = "Rank" + (rank + 1);
+    let fileName = "File" + (file + 1);
+    let imagePath = "images/" + SideChar[PieceCol[piece]] + PieceChar[piece].toUpperCase() + ".png";
+    let imageString = "<image src=\"" + imagePath + "\" class = \"Piece "  + rankName + " " + fileName + "\"/>";
+    $("#Board").append(imageString);
+}
+
 function setInitialBoardPieces(){
-    let pieceSquare, piece, file, rank, rankName, fileName, imagePath;
-    let imageString;
+    let pieceSquare, piece;
 
     clearAllPieces();
 
     for(let square = 0 ; square < 64 ; square++){
         pieceSquare = square120(square);
         piece = GameBoard.pieces[pieceSquare];
-        file = FilesBoard[pieceSquare];
-        rank = RanksBoard[pieceSquare];
-
         if(piece >= PIECES.wP && piece <= PIECES.bK){
-            rankName = "Rank" + (rank + 1);
-            fileName = "File" + (file + 1);
-            imagePath = "images/" + SideChar[PieceCol[piece]] + PieceChar[piece].toUpperCase() + ".png";
-            imageString = "<image src=\"" + imagePath + "\" class = \"Piece "  + rankName + " " + fileName + "\"/>";
-            $("#Board").append(imageString);
+            addPieceInGUI(pieceSquare, piece);
         }
     }
 }
@@ -83,7 +93,7 @@ function pieceIsOnSquare(square, top, left){
 }
 
 function deselectSquare(square){
-    $('.Square').each(function(index){
+    $('.Square').each(function(){
         if(pieceIsOnSquare(square, $(this).position().top, $(this).position().left) === BOOL.TRUE){
             $(this).removeClass("SquareSelected");
         }
@@ -91,7 +101,7 @@ function deselectSquare(square){
 }
 
 function setSquareSelected(square){
-    $('.Square').each(function(index){
+    $('.Square').each(function(){
         if(pieceIsOnSquare(square, $(this).position().top, $(this).position().left) === BOOL.TRUE){
             $(this).addClass("SquareSelected");
         }
@@ -125,6 +135,7 @@ function makeUserMove(){
         if(parsed !== NO_MOVE){
             MakeMove(parsed);
             PrintBoard();
+            movePieceInGUI(parsed);
         }
 
         deselectSquare(UserMove.from);
@@ -132,6 +143,71 @@ function makeUserMove(){
 
         UserMove.from = SQUARES.NO_SQUARE;
         UserMove.to = SQUARES.NO_SQUARE;
+    }
+}
+
+function removePieceInGUI(square){
+    $('.Piece').each(function(){
+        if(pieceIsOnSquare(square, $(this).position().top, $(this).position().left) === BOOL.TRUE){
+            $(this).remove();
+        }
+    });
+}
+
+function movePieceInGUI(move){
+    let from = getFromSquare(move);
+    let to = getToSquare(move);
+    if(move & MOVE_FLAG_EN_PASSANT !== 0){
+        let enPassantRemove;
+        if(GameBoard.side === COLOURS.BLACK){
+            enPassantRemove = to - ONE_RANK_MOVE;
+        }
+        else{
+            enPassantRemove = to + ONE_RANK_MOVE;
+        }
+        removePieceInGUI(enPassantRemove);
+    }
+    else if(getCapturedPiece(move)){
+        removePieceInGUI(to);
+    }
+
+    let file = FilesBoard[to];
+    let rank = RanksBoard[to];
+    let rankName = "Rank" + (rank + 1);
+    let fileName = "File" + (file + 1);
+
+    $('.Piece').each(function(){
+        if(pieceIsOnSquare(from, $(this).position().top, $(this).position().left) === BOOL.TRUE){
+            $(this).removeClass();
+            $(this).addClass("Piece " + rankName + " " + fileName);
+        }
+    });
+
+    if((move & MOVE_FLAG_CASTLE) !== 0){
+        switch(to){
+            case SQUARES.G1:
+                removePieceInGUI(SQUARES.H1);
+                addPieceInGUI(SQUARES.F1, PIECES.wR);
+                break;
+            case SQUARES.C1:
+                removePieceInGUI(SQUARES.A1);
+                addPieceInGUI(SQUARES.D1, PIECES.wR);
+                break;
+            case SQUARES.G8:
+                removePieceInGUI(SQUARES.H8);
+                addPieceInGUI(SQUARES.F8, PIECES.bR);
+                break;
+            case SQUARES.C8:
+                removePieceInGUI(SQUARES.A8);
+                addPieceInGUI(SQUARES.D8, PIECES.bR);
+                break;
+            default:
+                break;
+        }
+    }
+    else if((getPromotion(move)) !== 0 ){
+        removePieceInGUI(to);
+        addPieceInGUI(to, getPromotion(move));
     }
 }
 
