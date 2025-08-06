@@ -26,7 +26,8 @@ const { PIECES,
         getFromSquare,
         MAX_DEPTH,
         BOARD_SQUARE_NUM,
-        getToSquare} = require("./defs");
+        getToSquare,
+        getPromotion} = require("./defs");
 
 const { MakeMove, 
         UndoMove } = require("./makemove");
@@ -399,8 +400,42 @@ function GenerateCaptures(){
     }
 }
 
+function parseMove(from, to){
+    GenerateMoves();
+
+    let move = NO_MOVE;
+    let promoted_piece = PIECES.EMPTY;
+    let found = BOOL.FALSE;
+
+    for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
+        move = GameBoard.moveList[i];
+        if( (getFromSquare(move) === from) && (getToSquare(move) === to)){
+            promoted_piece = getPromotion(move);
+            if(promoted_piece !== PIECES.EMPTY){
+                if( (promoted_piece === PIECES.wQ && GameBoard.side === COLOURS.WHITE) ||
+                    (promoted_piece === PIECES.bQ && GameBoard.side === COLOURS.BLACK)) {
+                        found = BOOL.FALSE;
+                        break;
+                }
+                continue;
+            }
+            found = BOOL.TRUE;
+            break;
+        }
+    }
+    if(found !== BOOL.FALSE){
+        if(MakeMove(move) === BOOL.FALSE){
+            return NO_MOVE;
+        }
+        UndoMove();
+        return move;
+    }
+    return NO_MOVE;
+}
+
 module.exports = {
     GenerateMoves,
     MoveExists,
-    GenerateCaptures
+    GenerateCaptures,
+    parseMove
 }
