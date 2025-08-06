@@ -32,33 +32,17 @@ const { MakeMove,
         UndoMove } = require("./makemove");
 
 // mvv - Most Valuable Victim, lva - least valuable attacker
-let mvvLvaValue = [0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600];
-let mvvLvaScores = new Array(14 * 14);
-initMvvLva();
+// let mvvLvaValue = [0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600];
+// let mvvLvaScores = new Array(14 * 14);
+// initMvvLva();
 
-function initMvvLva(){
-    for(let attacker = PIECES.wP ; attacker <= PIECES.bK ; attacker++){
-        for(let victim = PIECES.wP ; victim <= PIECES.bK ; victim++){
-            mvvLvaScores[victim * 14 + attacker] = mvvLvaValue[victim] + 6 - (mvvLvaValue[attacker]/100);
-        }
-    }
-}
-
-function MoveExists(move){
-    GenerateMoves()
-    let moveFound = NO_MOVE;
-    for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
-        moveFound = GameBoard.moveList[i];
-        if(MakeMove(moveFound) === BOOL.FALSE){
-            continue;
-        }
-        UndoMove();
-        if(move === moveFound){
-            return BOOL.TRUE;
-        }
-    }
-    return BOOL.FALSE;
-}
+// function initMvvLva(){
+//     for(let attacker = PIECES.wP ; attacker <= PIECES.bK ; attacker++){
+//         for(let victim = PIECES.wP ; victim <= PIECES.bK ; victim++){
+//             mvvLvaScores[victim * 14 + attacker] = mvvLvaValue[victim] + 6 - (mvvLvaValue[attacker]/100);
+//         }
+//     }
+// }
 
 function MOVE(from, to, captured, promoted, flag){
     return (from | (to << 7) | (captured << 14) | (promoted << 20) | flag);
@@ -303,104 +287,120 @@ function GenerateMoves(){
     }
 }
 
-function GenerateCaptures(){
-    GameBoard.moveListStart[GameBoard.ply + 1] = GameBoard.moveListStart[GameBoard.ply];
+// function MoveExists(move){
+//     GenerateMoves()
+//     let moveFound = NO_MOVE;
+//     for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
+//         moveFound = GameBoard.moveList[i];
+//         if(MakeMove(moveFound) === BOOL.FALSE){
+//             continue;
+//         }
+//         UndoMove();
+//         if(move === moveFound){
+//             return BOOL.TRUE;
+//         }
+//     }
+//     return BOOL.FALSE;
+// }
 
-    if(GameBoard.side === COLOURS.WHITE){
-        let pieceType = PIECES.wP;
-        let square;
-        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[pieceType] ; pieceNum++){
-            square = GameBoard.pieceList[pieceIndex(pieceType, pieceNum)];
-            let leftDiagonal = square + 9;
-            if(IsSquareOffBoard(leftDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[leftDiagonal]] === COLOURS.BLACK){
-                AddWhitePawnCaptureMove(square, leftDiagonal, GameBoard.pieces[leftDiagonal]);
-            }
-            let rightDiagonal = square + 11;
-            if(IsSquareOffBoard(rightDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[rightDiagonal]] === COLOURS.BLACK){
-                AddWhitePawnCaptureMove(square, rightDiagonal, GameBoard.pieces[rightDiagonal]);
-            }
+// function GenerateCaptures(){
+//     GameBoard.moveListStart[GameBoard.ply + 1] = GameBoard.moveListStart[GameBoard.ply];
+
+//     if(GameBoard.side === COLOURS.WHITE){
+//         let pieceType = PIECES.wP;
+//         let square;
+//         for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[pieceType] ; pieceNum++){
+//             square = GameBoard.pieceList[pieceIndex(pieceType, pieceNum)];
+//             let leftDiagonal = square + 9;
+//             if(IsSquareOffBoard(leftDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[leftDiagonal]] === COLOURS.BLACK){
+//                 AddWhitePawnCaptureMove(square, leftDiagonal, GameBoard.pieces[leftDiagonal]);
+//             }
+//             let rightDiagonal = square + 11;
+//             if(IsSquareOffBoard(rightDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[rightDiagonal]] === COLOURS.BLACK){
+//                 AddWhitePawnCaptureMove(square, rightDiagonal, GameBoard.pieces[rightDiagonal]);
+//             }
             
-            if(GameBoard.enPassant !== SQUARES.NO_SQUARE){
-                if(leftDiagonal === GameBoard.enPassant){
-                    AddEnPassantMove(MOVE(square, leftDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
-                }
-                if(rightDiagonal === GameBoard.enPassant){
-                    AddEnPassantMove(MOVE(square, rightDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
-                }
-            }
-        }
-    }
-    else {
-        let pieceType = PIECES.bP;
-        let square;
-        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[pieceType] ; pieceNum++){
-            square = GameBoard.pieceList[pieceIndex(pieceType, pieceNum)];
-            let leftDiagonal = square - 9;
-            if(IsSquareOffBoard(leftDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[leftDiagonal]] === COLOURS.WHITE){
-                AddBlackPawnCaptureMove(square, leftDiagonal, GameBoard.pieces[leftDiagonal]);
-            }
-            let rightDiagonal = square - 11;
-            if(IsSquareOffBoard(rightDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[rightDiagonal]] === COLOURS.WHITE){
-                AddBlackPawnCaptureMove(square, rightDiagonal, GameBoard.pieces[rightDiagonal]);
-            }
+//             if(GameBoard.enPassant !== SQUARES.NO_SQUARE){
+//                 if(leftDiagonal === GameBoard.enPassant){
+//                     AddEnPassantMove(MOVE(square, leftDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+//                 }
+//                 if(rightDiagonal === GameBoard.enPassant){
+//                     AddEnPassantMove(MOVE(square, rightDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+//                 }
+//             }
+//         }
+//     }
+//     else {
+//         let pieceType = PIECES.bP;
+//         let square;
+//         for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[pieceType] ; pieceNum++){
+//             square = GameBoard.pieceList[pieceIndex(pieceType, pieceNum)];
+//             let leftDiagonal = square - 9;
+//             if(IsSquareOffBoard(leftDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[leftDiagonal]] === COLOURS.WHITE){
+//                 AddBlackPawnCaptureMove(square, leftDiagonal, GameBoard.pieces[leftDiagonal]);
+//             }
+//             let rightDiagonal = square - 11;
+//             if(IsSquareOffBoard(rightDiagonal) === BOOL.FALSE && PieceCol[GameBoard.pieces[rightDiagonal]] === COLOURS.WHITE){
+//                 AddBlackPawnCaptureMove(square, rightDiagonal, GameBoard.pieces[rightDiagonal]);
+//             }
             
-            if(GameBoard.enPassant !== SQUARES.NO_SQUARE){
-                if(leftDiagonal === GameBoard.enPassant){
-                    AddEnPassantMove(MOVE(square, leftDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
-                }
-                if(rightDiagonal === GameBoard.enPassant){
-                    AddEnPassantMove(MOVE(square, rightDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
-                }
-            }
-        }
-    }
+//             if(GameBoard.enPassant !== SQUARES.NO_SQUARE){
+//                 if(leftDiagonal === GameBoard.enPassant){
+//                     AddEnPassantMove(MOVE(square, leftDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+//                 }
+//                 if(rightDiagonal === GameBoard.enPassant){
+//                     AddEnPassantMove(MOVE(square, rightDiagonal, PIECES.EMPTY, PIECES.EMPTY, MOVE_FLAG_EN_PASSANT));
+//                 }
+//             }
+//         }
+//     }
 
-    let index = NonSlidingStartingIndex[GameBoard.side];
-    let piece = NonSlidingPieces[index++];
-    while(piece !== 0){
-        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
-            let square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-            for(let i = 0 ; i < PieceToDirectionsLength[piece] ; i++){
-                let direction = PieceToDirections[piece][i];
-                let target_square = square + direction;
-                if(IsSquareOffBoard(target_square) === BOOL.TRUE){
-                    continue;
-                }
-                if(GameBoard.pieces[target_square] !== PIECES.EMPTY){
-                    if(PieceCol[GameBoard.pieces[target_square]] !== GameBoard.side){
-                        AddCaptureMove(MOVE(square, target_square, GameBoard.pieces[target_square], PIECES.EMPTY, 0));
-                    }
-                }
-            }
-        }
-        piece = NonSlidingPieces[index++];
-    }
+//     let index = NonSlidingStartingIndex[GameBoard.side];
+//     let piece = NonSlidingPieces[index++];
+//     while(piece !== 0){
+//         for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
+//             let square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
+//             for(let i = 0 ; i < PieceToDirectionsLength[piece] ; i++){
+//                 let direction = PieceToDirections[piece][i];
+//                 let target_square = square + direction;
+//                 if(IsSquareOffBoard(target_square) === BOOL.TRUE){
+//                     continue;
+//                 }
+//                 if(GameBoard.pieces[target_square] !== PIECES.EMPTY){
+//                     if(PieceCol[GameBoard.pieces[target_square]] !== GameBoard.side){
+//                         AddCaptureMove(MOVE(square, target_square, GameBoard.pieces[target_square], PIECES.EMPTY, 0));
+//                     }
+//                 }
+//             }
+//         }
+//         piece = NonSlidingPieces[index++];
+//     }
 
-    index = SlidingPiecesStartingIndex[GameBoard.side];
-    piece = SlidingPieces[index++];
-    while(piece !== 0){
-        for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
-            let square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
-            for(let i = 0 ; i < PieceToDirectionsLength[piece] ; i++){
-                let direction = PieceToDirections[piece][i];
-                let target_square = square + direction;
-                while(IsSquareOffBoard(target_square) === BOOL.FALSE){
-                    if(GameBoard.pieces[target_square] !== PIECES.EMPTY){
-                        if(PieceCol[GameBoard.pieces[target_square]] !== GameBoard.side){
-                            AddCaptureMove(MOVE(square, target_square, GameBoard.pieces[target_square], PIECES.EMPTY, 0));
-                        }
-                        break;
-                    }
-                    target_square += direction;
-                }
-            }
-        }
-        piece = SlidingPieces[index++];
-    }
-}
+//     index = SlidingPiecesStartingIndex[GameBoard.side];
+//     piece = SlidingPieces[index++];
+//     while(piece !== 0){
+//         for(let pieceNum = 0 ; pieceNum < GameBoard.pieceNumber[piece] ; pieceNum++){
+//             let square = GameBoard.pieceList[pieceIndex(piece, pieceNum)];
+//             for(let i = 0 ; i < PieceToDirectionsLength[piece] ; i++){
+//                 let direction = PieceToDirections[piece][i];
+//                 let target_square = square + direction;
+//                 while(IsSquareOffBoard(target_square) === BOOL.FALSE){
+//                     if(GameBoard.pieces[target_square] !== PIECES.EMPTY){
+//                         if(PieceCol[GameBoard.pieces[target_square]] !== GameBoard.side){
+//                             AddCaptureMove(MOVE(square, target_square, GameBoard.pieces[target_square], PIECES.EMPTY, 0));
+//                         }
+//                         break;
+//                     }
+//                     target_square += direction;
+//                 }
+//             }
+//         }
+//         piece = SlidingPieces[index++];
+//     }
+// }
 
 module.exports = {
     GenerateMoves,
-    MoveExists,
-    GenerateCaptures
+    // MoveExists,
+    // GenerateCaptures
 }

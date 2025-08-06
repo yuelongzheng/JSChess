@@ -1,7 +1,8 @@
 const $ = require('jquery');
 
 const { ParseFen, 
-        PrintBoard } = require("./board");
+        PrintBoard, 
+        InitBoardVariables} = require("./board");
 
 const { START_FEN, RANKS, FILES } = require("./defs");
 
