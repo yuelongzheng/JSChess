@@ -32,7 +32,7 @@ const { PIECES,
 const { MakeMove, 
         UndoMove } = require("./makemove");
 
-mvv - Most Valuable Victim, lva - least valuable attacker
+// mvv - Most Valuable Victim, lva - least valuable attacker
 let mvvLvaValue = [0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600];
 let mvvLvaScores = new Array(14 * 14);
 initMvvLva();
