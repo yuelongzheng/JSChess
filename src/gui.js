@@ -30,9 +30,10 @@ const { START_FEN,
         ONE_RANK_MOVE,
         GameController,
         pieceIndex,
-        Kings} = require('./defs');
+        Kings,
+        MAX_DEPTH} = require('./defs');
 
-const { searchPosition } = require('./search');
+const { searchPosition, searchController } = require('./search');
 const { PrintSquare } = require('./io');
 const { MakeMove, UndoMove } = require('./makemove');
 const { GenerateMoves } = require('./movegen');
@@ -142,6 +143,7 @@ function makeUserMove(){
             PrintBoard();
             movePieceInGUI(parsed);
             checkAndSet();
+            preSearch();
         }
 
         deselectSquare(UserMove.from);
@@ -349,6 +351,25 @@ function parseMove(from, to){
     return NO_MOVE;
 }
 
+function startSearch(){
+    searchController.depth = MAX_DEPTH;
+    let time = Date.now();
+    let thinkingTime = $("#ThinkTimeChoice").val();
+
+    searchController.time = parseInt(thinkingTime) * 1000;
+    searchPosition();
+    MakeMove(searchController.bestMove);
+    movePieceInGUI(searchController.bestMove);
+    checkAndSet();
+}
+
+function preSearch(){
+    if(GameController.GameOver === BOOL.FALSE){
+        searchController.thinking = BOOL.TRUE;
+        setTimeout(function(){ startSearch();}, 200);
+    }
+}
+
 const clickPiece = $(document).on('click', '.Piece', function (e){
     console.log('Piece Click');
     if(UserMove.from === SQUARES.NO_SQUARE){
@@ -368,11 +389,16 @@ const clickSquare = $(document).on('click', '.Square', function (e){
     }
 });
 
+const startSearchNow = $("#SearchButton").on('click', function(){
+    GameController.PlayerSide = GameController.side ^ 1;
+    preSearch();
+});
 
 module.exports = {
     parseFenOnClick,
     parseFenOnEnter,
     clickPiece,
     clickSquare,
-    newGame
+    newGame,
+    startSearchNow
 }

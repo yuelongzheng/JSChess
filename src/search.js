@@ -26,6 +26,8 @@ const { storePvMove,
         probePvTable, 
         getPvLine} = require("./pvtable");
 
+const $ = require('jquery');
+
 const searchController = {}
 
 searchController.nodes;
@@ -268,9 +270,10 @@ function searchPosition(){
     let bestScore = -INFINITE;
     let line;
     let pvNum;
+    let currentDepth = 1;
     clearForSearch();
 
-    for(let currentDepth = 1 ; currentDepth <= /*searchController.depth*/ 6 ; currentDepth++){
+    for(currentDepth = 1 ; currentDepth <= searchController.depth ; currentDepth++){
         bestScore = alphaBeta(-INFINITE, INFINITE, currentDepth);
         if(searchController.stop === BOOL.TRUE){
             break;
@@ -293,8 +296,24 @@ function searchPosition(){
     }
     searchController.bestMove = bestMove;
     searchController.thinking = BOOL.FALSE;
+    updateDOMStats(bestScore, currentDepth);
+}
+
+function updateDOMStats(domScore, domDepth){
+    let scoreText = "Score: " + (domScore / 100).toFixed(2);
+    if(Math.abs(domScore) > MATE - MAX_DEPTH){
+        scoreText = "Score: Mate in " + (MATE - Math.abs(domScore)) + " moves";
+    }
+    $("#OrderingOut").text("Ordering " + ((searchController.failHighFirst/searchController.failHigh)*100).toFixed(2) + "%");
+    $("#DepthOut").text("Depth: " + domDepth);
+    $("#ScoreOut").text(scoreText);
+    $("#NodesOut").text("Nodes: " + searchController.nodes);
+    $("#TimeOut").text("Time: " + ((Date.now() - searchController.start)/1000).toFixed(1) + "s");
+    $("#BestOut").text("Best Move: " + PrintMove(searchController.bestMove));
+
 }
 
 module.exports = {
-    searchPosition
+    searchPosition,
+    searchController
 }
