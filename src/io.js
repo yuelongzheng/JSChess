@@ -2,9 +2,7 @@ const { GameBoard } = require("./board");
 const { FileChar, FilesBoard, RankChar, RanksBoard,
         getFromSquare, getToSquare, getPromotion,
         PIECES, BOOL, PieceKnight, PieceRookQueen,
-        PieceBishopQueen, 
-        NO_MOVE,
-        COLOURS} = require("./defs");
+        PieceBishopQueen} = require("./defs");
 
 function PrintSquare(square){
     return FileChar[FilesBoard[square]] + RankChar[RanksBoard[square]];

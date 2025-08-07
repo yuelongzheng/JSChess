@@ -35,7 +35,7 @@ const { START_FEN,
 const { searchPosition } = require('./search');
 const { PrintSquare } = require('./io');
 const { MakeMove, UndoMove } = require('./makemove');
-const { parseMove, GenerateMoves } = require('./movegen');
+const { GenerateMoves } = require('./movegen');
 
 function parseFenOnAction(){
     let fenStr = $("#fenIn").val();
@@ -314,6 +314,39 @@ function checkAndSet(){
         GameController.GameOver = BOOL.FALSE;
         $("#GameStatus").text("");
     }
+}
+
+function parseMove(from, to){
+    GenerateMoves();
+
+    let move = NO_MOVE;
+    let promoted_piece = PIECES.EMPTY;
+    let found = BOOL.FALSE;
+
+    for(let i = GameBoard.moveListStart[GameBoard.ply] ; i < GameBoard.moveListStart[GameBoard.ply + 1] ; i++){
+        move = GameBoard.moveList[i];
+        if( (getFromSquare(move) === from) && (getToSquare(move) === to)){
+            promoted_piece = getPromotion(move);
+            if(promoted_piece !== PIECES.EMPTY){
+                if( (promoted_piece === PIECES.wQ && GameBoard.side === COLOURS.WHITE) ||
+                    (promoted_piece === PIECES.bQ && GameBoard.side === COLOURS.BLACK)) {
+                        found = BOOL.FALSE;
+                        break;
+                }
+                continue;
+            }
+            found = BOOL.TRUE;
+            break;
+        }
+    }
+    if(found !== BOOL.FALSE){
+        if(MakeMove(move) === BOOL.FALSE){
+            return NO_MOVE;
+        }
+        UndoMove();
+        return move;
+    }
+    return NO_MOVE;
 }
 
 const clickPiece = $(document).on('click', '.Piece', function (e){
