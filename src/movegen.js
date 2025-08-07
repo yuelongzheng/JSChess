@@ -27,7 +27,8 @@ const { PIECES,
         MAX_DEPTH,
         BOARD_SQUARE_NUM,
         getToSquare,
-        getPromotion} = require("./defs");
+        getPromotion,
+        Kings} = require("./defs");
 
 const { MakeMove, 
         UndoMove } = require("./makemove");
@@ -433,9 +434,100 @@ function parseMove(from, to){
     return NO_MOVE;
 }
 
+// function isThereMaterialDraw(){
+//     let pawnsExists = GameBoard.pieceNumber[PIECES.wP] !== 0 || GameBoard.pieceNumber[PIECES.bP] !== 0;
+//     if(pawnsExists){
+//         return BOOL.FALSE;
+//     }
+//     let queensExists = GameBoard.pieceNumber[PIECES.wQ] !== 0 || GameBoard.pieceNumber[PIECES.bQ] !== 0;
+//     let rooksExists = GameBoard.pieceNumber[PIECES.wR] !== 0 || GameBoard.pieceNumber[PIECES.bR] !== 0;
+//     if(queensExists || rooksExists){
+//         return BOOL.FALSE;
+//     }
+//     let twoKnightsExists = GameBoard.pieceNumber[PIECES.wK] !== 0 || GameBoard.pieceNumber[PIECES.bK] === 2;
+//     if(twoKnightsExists){
+//         return BOOL.FALSE;
+//     }
+//     let twoBishopsExists = GameBoard.pieceNumber[PIECES.wB] !== 0 || GameBoard.pieceNumber[PIECES.bB] === 2;
+//     if(twoBishopsExists){
+//         return BOOL.FALSE;
+//     }
+//     let whiteBishopAndWhiteKnightExist = GameBoard.pieceNumber[PIECES.wN] !== 0 && GameBoard.pieceNumber[PIECES.wB] !== 0;
+//     if(whiteBishopAndWhiteKnightExist){
+//         return BOOL.FALSE;
+//     }
+//     let blackBishopAndBlackKnightExist = GameBoard.pieceNumber[PIECES.bN] !== 0 && GameBoard.pieceNumber[PIECES.bB] !== 0;
+//     if(blackBishopAndBlackKnightExist){
+//         return BOOL.FALSE;
+//     }
+//     return BOOL.TRUE;
+// }
+
+// function threefoldRepetitionCheck(){
+//     let repetitions = 0;
+//     for(let i = 0 ; i < GameBoard.hisPly ; i++){
+//         if(GameBoard.history[i].posKey === GameBoard.posKey){
+//             repetitions++;
+//             if(repetitions === 2){
+//                 break;
+//             }
+//         }
+//     }
+//     return repetitions;
+// }
+
+// function checkGameEnd(){
+//     if(GameBoard.fiftyMove >= 100){
+//         $("#GameStatus").text("GAME DRAWN {Fifty move rule}");
+//         return BOOL.TRUE;
+//     }
+//     if(threefoldRepetitionCheck() >= 2){
+//         $("#GameStatus").text("GAME DRAWN {Threefold repetition}");
+//         return BOOL.TRUE;
+//     }
+//     if(isThereMaterialDraw() === BOOL.TRUE){
+//         $("#GameStatus").text("GAME DRAWN {Insufficent material to mate}");
+//         return BOOL.TRUE;
+//     }
+
+//     GenerateMoves();
+
+//     let found = 0;
+//     for(let moveNum = GameBoard.moveListStart[GameBoard.ply] ; moveNum < GameBoard.moveListStart[GameBoard.ply + 1] ; moveNum++){
+//         if(MakeMove(GameBoard.moveList[moveNum]) === BOOL.FALSE){
+//             continue;
+//         }
+//         found++;
+//         UndoMove();
+//         break;
+//     }
+
+//     if(found !== 0){
+//         return BOOL.FALSE;
+//     }
+
+//     let inCheck = SquareAttacked(GameBoard.pieceList[pieceIndex(Kings[GameBoard.side], 0)], GameBoard.side^1);
+//     if(inCheck === BOOL.TRUE){
+//         if(GameBoard.side === COLOURS.WHITE){
+//             $("#GameStatus").text("GAME OVER {Black Mates}");
+//             return BOOL.TRUE;
+//         }
+//         else{
+//             $("#GameStatus").text("GAME OVER {White Mates}");
+//             return BOOL.TRUE;
+//         }
+//     }
+//     else{
+//         $("#GameStatus").text("GAME OVER {Stalemate}");
+//         return BOOL.TRUE;
+//     }
+// }
+
+
 module.exports = {
     GenerateMoves,
     MoveExists,
     GenerateCaptures,
-    parseMove
+    parseMove,
+    // checkGameEnd
 }

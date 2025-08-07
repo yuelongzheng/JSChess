@@ -446,15 +446,6 @@ function HashEnPassant(){
     GameBoard.posKey ^= PieceKeys[GameBoard.enPassant];
 }
 
-let GameController = {};
-GameController.engineSide = COLOURS.BOTH;
-GameController.playerSide = COLOURS.BOTH;
-GameController.gameOver = BOOL.FALSE;
-
-let UserMove = {};
-UserMove.from = SQUARES.NO_SQUARE;
-UserMove.to = SQUARES.NO_SQUARE;
-
 module.exports = {
     GameBoard,
     CheckBoard,
@@ -465,7 +456,5 @@ module.exports = {
     HashCastle,
     HashSide,
     HashEnPassant,
-    SquareAttacked,
-    GameController,
-    UserMove
+    SquareAttacked
 }
