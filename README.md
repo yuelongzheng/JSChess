@@ -53,7 +53,6 @@ The engine can be played by cloning the repository and then opening index.html i
 
 # Future Improvements
 
-- Implement a flip board feature
 - Improve GUI appearance
 - Display FEN string below the gameboard
 - Use React to improve the GUI
