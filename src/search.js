@@ -268,16 +268,18 @@ function clearForSearch(){
 function searchPosition(){
     let bestMove = NO_MOVE;
     let bestScore = -INFINITE;
+    let score = -INFINITE;
     let line;
     let pvNum;
     let currentDepth = 1;
     clearForSearch();
 
     for(currentDepth = 1 ; currentDepth <= searchController.depth ; currentDepth++){
-        bestScore = alphaBeta(-INFINITE, INFINITE, currentDepth);
+        score = alphaBeta(-INFINITE, INFINITE, currentDepth);
         if(searchController.stop === BOOL.TRUE){
             break;
         }
+        bestScore = score;
         bestMove = probePvTable();
         line = 'Depth: ' + currentDepth
         line +=' Best Move: ' + PrintMove(bestMove) 
@@ -302,7 +304,7 @@ function searchPosition(){
 function updateDOMStats(domScore, domDepth){
     let scoreText = "Score: " + (domScore / 100).toFixed(2);
     if(Math.abs(domScore) > MATE - MAX_DEPTH){
-        scoreText = "Score: Mate in " + (MATE - Math.abs(domScore)) + " moves";
+        scoreText = "Score: Mate in " + (MATE - Math.abs(domScore) - 1) + " moves";
     }
     $("#OrderingOut").text("Ordering " + ((searchController.failHighFirst/searchController.failHigh)*100).toFixed(2) + "%");
     $("#DepthOut").text("Depth: " + domDepth);

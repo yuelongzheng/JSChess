@@ -394,11 +394,22 @@ const startSearchNow = $("#SearchButton").on('click', function(){
     preSearch();
 });
 
+const undoPreviousMove = $('#UndoButton').on('click', function(){
+    if(GameBoard.hisPly > 0){
+        UndoMove();
+        GameBoard.ply = 0;
+        setInitialBoardPieces();
+    }
+});
+
+const createNewGame = $('#NewGameButton').on('click', function(){
+    newGame(START_FEN);
+});
+
 module.exports = {
     parseFenOnClick,
     parseFenOnEnter,
     clickPiece,
     clickSquare,
-    newGame,
-    startSearchNow
+    newGame
 }
