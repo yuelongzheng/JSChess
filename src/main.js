@@ -1,16 +1,8 @@
 const $ = require('jquery');
 
-const { ParseFen, 
-        PrintBoard, 
-        InitBoardVariables} = require("./board");
-
 const { START_FEN, RANKS, FILES } = require("./defs");
 
-const { parseFenOnClick, 
-        parseFenOnEnter, 
-        newGame,
-        clickPiece,
-        clickSquare} = require("./gui");
+const { newGame } = require("./gui");
 
 // Checks if document is ready
 $(function(){
@@ -53,7 +45,3 @@ function initBoardSquares(){
 }
 
 initBoardSquares();
-parseFenOnClick;
-parseFenOnEnter;
-clickPiece;
-clickSquare;

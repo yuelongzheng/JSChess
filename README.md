@@ -48,12 +48,19 @@ npm run dev
 Uses min-max and alpha-beta pruning for searching moves.
 Quiescent search, MVV/LVA, and principal variation search are implemented to improve searching techniques.
 
+# Playing with engine
+The engine can be played by cloning the repository and then opening index.html in the public folder
+
 # Future Improvements
 
 - Implement a flip board feature
 - Improve GUI appearance
 - Display FEN string below the gameboard
 - Use React to improve the GUI
+- Display search statisitcs on page
+- Improve searching algorithm
+- Implement a opening book for the engine
+- Make it playable online
 
 # Acknowledgements
 
