@@ -56,7 +56,6 @@ The engine can be played by cloning the repository and then opening index.html i
 - Improve GUI appearance
 - Display FEN string below the gameboard
 - Use React to improve the GUI
-- Display search statisitcs on page
 - Improve searching algorithm
 - Implement an opening book for the engine
 - Make it playable online
