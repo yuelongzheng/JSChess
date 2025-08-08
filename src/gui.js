@@ -386,9 +386,10 @@ function parseMove(from, to){
         if( (getFromSquare(move) === from) && (getToSquare(move) === to)){
             promoted_piece = getPromotion(move);
             if(promoted_piece !== PIECES.EMPTY){
+                // Do something here to enable promotion to other pieces ???
                 if( (promoted_piece === PIECES.wQ && GameBoard.side === COLOURS.WHITE) ||
                     (promoted_piece === PIECES.bQ && GameBoard.side === COLOURS.BLACK)) {
-                        found = BOOL.FALSE;
+                        found = BOOL.TRUE;
                         break;
                 }
                 continue;

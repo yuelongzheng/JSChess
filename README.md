@@ -60,6 +60,8 @@ The engine can be played by cloning the repository and then opening index.html i
 - Implement an opening book for the engine
 - Make it playable online
 - Add ranks and files indicators to the board
+- Enable the promotion of pawns to rooks, bishops, and knight in GUI
+- Add move history to GUI
 
 # Acknowledgements
 
