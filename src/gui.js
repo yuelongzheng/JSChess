@@ -5,8 +5,6 @@ const { ParseFen,
         GameBoard,
         SquareAttacked} = require("./board");
 
-const { PerftTest } = require('./perft');
-
 const { START_FEN,
         square120, 
         FilesBoard, 
@@ -353,7 +351,6 @@ function parseMove(from, to){
 
 function startSearch(){
     searchController.depth = MAX_DEPTH;
-    let time = Date.now();
     let thinkingTime = $("#ThinkTimeChoice").val();
 
     searchController.time = parseInt(thinkingTime) * 1000;

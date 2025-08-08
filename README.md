@@ -43,6 +43,18 @@ webdev-server can also be used
 npm run dev
     ```
 
+# Searching
+
+Uses min-max and alpha-beta pruning for searching moves.
+Quiescent search, MVV/LVA, and principal variation search are implemented to improve searching techniques.
+
+# Future Improvements
+
+- Implement a flip board feature
+- Improve GUI appearance
+- Display FEN string below the gameboard
+- Use React to improve the GUI
+
 # Acknowledgements
 
 Using the following [playlist](https://www.youtube.com/watch?v=2eA0bD3wV3Q&list=PLZ1QII7yudbe4gz2gh9BCI6VDA-xafLog&index=1) as a guide
