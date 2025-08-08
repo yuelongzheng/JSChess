@@ -61,6 +61,7 @@ The engine can be played by cloning the repository and then opening index.html i
 - Improve searching algorithm
 - Implement a opening book for the engine
 - Make it playable online
+- Add ranks and files indicators to the board
 
 # Acknowledgements
 

@@ -262,6 +262,7 @@ let GameController = {};
 GameController.EngineSide = COLOURS.BOTH;
 GameController.PlayerSide = COLOURS.BOTH;
 GameController.GameOver = BOOL.FALSE;
+GameController.BoardSide = COLOURS.WHITE;
 
 let UserMove = {};
 UserMove.from = SQUARES.NO_SQUARE;

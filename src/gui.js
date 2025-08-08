@@ -29,7 +29,9 @@ const { START_FEN,
         GameController,
         pieceIndex,
         Kings,
-        MAX_DEPTH} = require('./defs');
+        MAX_DEPTH,
+        RANKS,
+        FILES} = require('./defs');
 
 const { searchPosition, searchController } = require('./search');
 const { PrintSquare } = require('./io');
@@ -57,11 +59,23 @@ function clearAllPieces(){
     $(".Piece").remove();
 }
 
+function getRankAndFile(rank, file){
+    let rankName, fileName;
+    if(GameController.BoardSide === COLOURS.WHITE){
+        rankName = "Rank" + (rank + 1);
+        fileName = "File" + (file + 1);
+    }
+    else{
+        rankName = "rank" + (rank + 1);
+        fileName = "file" + (file + 1);
+    }
+    return [rankName, fileName];
+}
+
 function addPieceInGUI(square, piece){
     let file = FilesBoard[square];
     let rank = RanksBoard[square];
-    let rankName = "Rank" + (rank + 1);
-    let fileName = "File" + (file + 1);
+    let [rankName, fileName] = getRankAndFile(rank, file);
     let imagePath = "images/" + SideChar[PieceCol[piece]] + PieceChar[piece].toUpperCase() + ".png";
     let imageString = "<image src=\"" + imagePath + "\" class = \"Piece "  + rankName + " " + fileName + "\"/>";
     $("#Board").append(imageString);
@@ -81,16 +95,55 @@ function setInitialBoardPieces(){
     }
 }
 
+function getLightString(light){
+    if(light === 0){
+        return "Light";
+    }
+    return "Dark";
+}
+
+function getDivString(rankName, fileName, lightString){
+    return  "<div class=\"Square " + rankName + " " + fileName + " " + lightString + "\"/>";
+}
+
+function clearAllSquares(){
+    $(".Square").remove();
+}
+
+function initBoardSquares(){
+    let light = 1;
+    let divString, lightString;
+
+    clearAllSquares();
+    for(let r = RANKS.RANK_8 ; r >= RANKS.RANK_1 ; r--){
+        light ^= 1;
+        for(let f = FILES.FILE_A ; f <= FILES.FILE_H ; f++){
+            lightString = getLightString(light);
+            light ^= 1;
+            let [rankName, fileName] = getRankAndFile(r, f);
+            divString = getDivString(rankName, fileName, lightString);
+            $("#Board").append(divString);
+        }
+    }
+}
+
 function newGame(fenStr){
     ParseFen(fenStr);
     PrintBoard();
+    initBoardSquares();
     setInitialBoardPieces();
     checkAndSet();
 }
 
 function pieceIsOnSquare(square, top, left){
-    if((RanksBoard[square] === 7 - Math.round(top/60)) &&
+    if( (GameController.BoardSide === COLOURS.WHITE) && 
+        (RanksBoard[square] === 7 - Math.round(top/60)) &&
         (FilesBoard[square] === Math.round(left/60))){
+            return BOOL.TRUE;
+    }
+    if( (GameController.BoardSide === COLOURS.BLACK) &&
+        (RanksBoard[square] === Math.round(top/60)) &&
+        (FilesBoard[square] === 7 - Math.round(left/60))){
             return BOOL.TRUE;
     }
     return BOOL.FALSE;
@@ -121,9 +174,15 @@ function clickedSquare(pageX, pageY){
     pageX = Math.floor(pageX);
     pageY = Math.floor(pageY);
     
-    let file = Math.floor((pageX - boardOriginX) / 60);
-    let rank = 7 - Math.floor((pageY - boardOriginY) / 60);
-
+    let file, rank;
+    if(GameController.BoardSide === COLOURS.WHITE){
+        file = Math.floor((pageX - boardOriginX) / 60);
+        rank = 7 - Math.floor((pageY - boardOriginY) / 60);
+    }
+    else{
+        file = 7 - Math.floor((pageX - boardOriginX) / 60);
+        rank = Math.floor((pageY - boardOriginY) / 60);
+    }
     let square = FileRankToSquare(file, rank);
     console.log("Clicked Square : " + PrintSquare(square));
     setSquareSelected(square);
@@ -179,8 +238,7 @@ function movePieceInGUI(move){
 
     let file = FilesBoard[to];
     let rank = RanksBoard[to];
-    let rankName = "Rank" + (rank + 1);
-    let fileName = "File" + (file + 1);
+    let [rankName, fileName] = getRankAndFile(rank, file);
 
     $('.Piece').each(function(){
         if(pieceIsOnSquare(from, $(this).position().top, $(this).position().left) === BOOL.TRUE){
@@ -387,7 +445,7 @@ const clickSquare = $(document).on('click', '.Square', function (e){
 });
 
 const startSearchNow = $("#SearchButton").on('click', function(){
-    GameController.PlayerSide = GameController.side ^ 1;
+    GameController.PlayerSide = GameBoard.side ^ 1;
     preSearch();
 });
 
@@ -401,6 +459,12 @@ const undoPreviousMove = $('#UndoButton').on('click', function(){
 
 const createNewGame = $('#NewGameButton').on('click', function(){
     newGame(START_FEN);
+});
+
+const flipBoard = $('#FlipButton').on('click', function(){
+    GameController.BoardSide ^= 1;
+    initBoardSquares();
+    setInitialBoardPieces();
 });
 
 module.exports = {
